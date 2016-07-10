@@ -15,5 +15,6 @@ RAF :
   * gérer le défilement du tweet
   * fixer le temps d'affichage du tweet
   * Bufferiser les tweets
+  * Détecter automatiquement le port de connexion (à faire en JS ou python)
 
 La communication Arduino->Rpi a été testé avec succès. Donc pas de souci pour avoir un feedback de l'affichage du tweet.
