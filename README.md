@@ -2,10 +2,10 @@
 Module de discussion par tweet pour Léa
 
 Vous devez ajouter les clés suivantes à vos variables d'environnement :
-  TWITTER_CONSUMER_KEY,
-  TWITTER_CONSUMER_SECRET,
-  TWITTER_ACCESS_TOKEN_KEY,
-  TWITTER_ACCESS_TOKEN_SECRET
+  * **TWITTER_CONSUMER_KEY**
+  * **TWITTER_CONSUMER_SECRET**
+  * **TWITTER_ACCESS_TOKEN_KEY**
+  * **TWITTER_ACCESS_TOKEN_SECRET**
 
 Il s'agit de vos credentials Twitter.
 
