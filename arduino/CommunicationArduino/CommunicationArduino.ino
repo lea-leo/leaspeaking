@@ -14,23 +14,10 @@ void setup()
 
 void loop()
 {
-  /*if (Serial.available())  {
+  if (Serial.available())  {
     delay(100);
     lcd.clear();
     lcd.autoscroll();
     lcd.print(Serial.readString()); 
-  }*/
-  // when characters arrive over the serial port...
-  if (Serial.available()) {
-    // wait a bit for the entire message to arrive
-    delay(100);
-    // clear the screen
-    lcd.clear();
-    lcd.autoscroll();
-    // read all the available characters
-    while (Serial.available() > 0) {
-      // display each character to the LCD
-      lcd.write(Serial.read());
-    }
   }
 }
