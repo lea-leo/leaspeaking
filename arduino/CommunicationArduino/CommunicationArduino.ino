@@ -19,5 +19,6 @@ void loop()
     lcd.clear();
     lcd.autoscroll();
     lcd.print(Serial.readString()); 
+    Serial.write("DONE");
   }
 }
