@@ -1,0 +1,9 @@
+1 tweet arrive => transfert auprès de l'arduino => affichage
+Après ?? 
+
+2 listes 	currentTweets
+			historyTweets
+
+1 worker pour la réception des events + réception fin affichage tweet (worker Master)
+1 worker pour le stockage des tweets
+1 worker pour l'envoi à l'arduino
