@@ -7,3 +7,6 @@ Après ??
 1 worker pour la réception des events + réception fin affichage tweet (worker Master)
 1 worker pour le stockage des tweets
 1 worker pour l'envoi à l'arduino
+
+RAF 
+	la gamification de Léo
