@@ -1,3 +1,4 @@
+// Lancement du script pyhton pour écrire sur le port sérial
 export function writeDataOnSerial(data) {
 	var PythonShell = require('python-shell');
 	 

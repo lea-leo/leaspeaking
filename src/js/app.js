@@ -11,37 +11,33 @@ var clusterArduino;
 
 if (cluster.isMaster) {
 
-	//console.log("Je suis le master");
-
-	// Message
+	// Réception des messages provenant des workers
 	function messageHandler(msg) {
 		if (msg.cmd && msg.cmd == 'notifyRequest') {
 		  numReqs += 1;
 		}
 		if (msg.cmd && msg.cmd == 'tweetReceive') {
-		  //console.log("MESSAGE DU MASTER");
-		  //console.log(msg.tweet);
 		  clusterArduino.send({tweet: msg.tweet});
 		}
 	}
 
-	// Start workers and listen for messages containing notifyRequest
+	// Création du worker contenant le code Twitter et ajout d'un handler
 	clusterTwitter = cluster.fork({workerName: "twitter"});
 	clusterTwitter.on('message', messageHandler);
 
+	// Création du worker contenant le code arduino et ajout d'un handler
 	clusterArduino = cluster.fork({workerName: "arduino"});
 	clusterArduino.on('message', messageHandler);
 
 } else {
 	if(process.env.workerName=="twitter"){
-		//console.log("Lancement worker twitter : " + cluster.worker.id);
+		// Lancement de l'écoute de l'API Twitter streaming
 		twitter.streamTwitter();
     }
 
     if(process.env.workerName=="arduino"){
-		//console.log("Lancement worker arduino : " + cluster.worker.id);
+    	// Ecoute du message en provenance du Master
 		process.on('message', function(msg) {
-	    	//console.log('Worker ' + process.pid + ' received message from master.', msg.tweet);
 	    	arduino.writeDataOnSerial(msg.tweet); 
 	  	});
     }
