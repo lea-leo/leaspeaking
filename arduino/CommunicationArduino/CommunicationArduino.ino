@@ -21,20 +21,24 @@ void setup()
   Serial.begin(9600);
   lcd.init(); // initialize the lcd
   lcd.backlight();
-  lcd.print((char) 0x5C);
+  lcd.print("En attente de tweets...");
  // lcd.print("Setup Arduino"); // Print a message to the LCD.
-  myservo.attach(9);
-  myservo.write(LOW_POSITION);
+ //myservo.attach(9);
+ // myservo.write(LOW_POSITION);
 
 }
 
 void loop()
 {
-  if (Serial.available())  {
-    delay(100);
+  //if (Serial.available())  {
+   /* delay(100);
+    lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print(Serial.readString()); 
-    Serial.write("DONE");
+    lcd.print(Serial.readString());
+    delay(2000); */
+    Serial.write("1");
+    
+    
     /*for (pos = 20; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
@@ -47,16 +51,16 @@ void loop()
     myservo.write(LOW_POSITION);
     delay(120);*/
 
-    for (pos = 180; pos >= 20; pos -= 1) { // goes from 180 degrees to 0 degrees
+    /*for (pos = 180; pos >= 20; pos -= 1) { // goes from 180 degrees to 0 degrees
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
     }
-  delay(1000);
+    delay(1000);
     for (pos = 20; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
       delay(20);                       // waits 15ms for the servo to reach the position
-    }
+    }*/
     
-  }
+  //}
 }

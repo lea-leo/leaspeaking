@@ -14,13 +14,14 @@ class MyListener():
     ser.port = 'COM5'
     ser.baudrate = 9600
     ser.timeout = 1
-    ser.setDTR(False)
+    #ser.setDTR(False)
     ser.open()
-    ser.write(sys.argv[1].encode())
     time.sleep(2)
-    msg = ser.read(ser.inWaiting()) # read everything in the input buffer
     print ("Message from arduino: ")
-    print (msg)
+    print(ser.read(ser.inWaiting()))
+    #print ser.readliine(ser.inWaiting()) # read everything in the input buffer
+    
+    #print (msg)
 
 
 
