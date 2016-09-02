@@ -14,7 +14,7 @@ class MyListener():
     ser.port = 'COM5'
     ser.baudrate = 9600
     ser.timeout = 1
-    #ser.setDTR(False)
+    ser.setDTR(False)
     ser.open()
     time.sleep(2)
     print ("Message from arduino: ")

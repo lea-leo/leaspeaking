@@ -18,20 +18,41 @@ Arduino.writeDataOnSerial = function(msg) {
 
 	var options = {
 		pythonPath: 'D:\\sqli\\outils\\Python34\\python',
-		args: [msg]
+		args: [msg.tweet],
+		mode: 'text'
 	};
 
 	console.log("J'écris sur le port série de l'arduino : " + msg.tweet);
-	setTimeout(function() {
+	/*setTimeout(function() {
 		Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
-	}, 10000);
-	/*PythonShell.run('src/js/readSerial.py', options, function (err, results) {
+	}, 10000);*/
+	var shell = new PythonShell('src/js/writeSerial.py', options);
+
+	shell.on('message', function(message) {
+		console.log("Je suis dans la section message");
+		console.log(message);
+	});
+
+	shell.end(function() {
+		setTimeout(function() {
+			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
+			Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
+		}, 10000);
+	});
+
+
+	/*PythonShell.run('src/js/writeSerial.py', options, function (err, results) {
 	 if (err) {
-	 console.log(err);
-	 throw err;
+	 	console.log(err);
+	 	throw err;
 	 }
+	 //console.log("Le tweet est fini d'afficher par l'arduino !" + results);
+	 //Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
 	 return "coucou";
-	 });*/
+	 }).end(function() {
+		console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
+		Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
+	});*/
 }
 
 /**
