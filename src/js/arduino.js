@@ -15,28 +15,32 @@ function Arduino () {
  */
 Arduino.writeDataOnSerial = function(msg) {
 	var PythonShell = require('python-shell');
-
+	//console.log("Le msg dans writeDataOnSerial");
+	//console.log(msg);
 	var options = {
 		pythonPath: 'D:\\sqli\\outils\\Python34\\python',
-		args: [msg.tweet],
+		args: [msg.LCDText],
 		mode: 'text'
 	};
 
-	console.log("J'écris sur le port série de l'arduino : " + msg.tweet);
+	console.log("J'écris sur le port série de l'arduino : " + msg.LCDText);
 	/*setTimeout(function() {
 		Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
 	}, 10000);*/
 	var shell = new PythonShell('src/js/writeSerial.py', options);
 
-	shell.on('message', function(message) {
+	/*shell.on('message', function(message) {
 		console.log("Je suis dans la section message");
 		console.log(message);
-	});
+	});*/
 
 	shell.end(function() {
 		setTimeout(function() {
+			//console.log("Le msg dans setTimeOut");
+			//console.log(msg);
+			//msg.fresh = false;
 			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-			Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
+			Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg});
 		}, 10000);
 	});
 
@@ -61,7 +65,8 @@ Arduino.writeDataOnSerial = function(msg) {
  * @param msg message contenant le type d'action à effectuer
  */
 Arduino.messageHandler = function(msg) {
-	console.log("\nArduino !!!");
+    //console.log("\nArduino !!!" + msg);
+    //console.log("\nArduino !!!" + msg);
 	Arduino.writeDataOnSerial(msg);
 };
 

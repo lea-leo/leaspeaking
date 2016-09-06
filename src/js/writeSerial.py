@@ -13,11 +13,13 @@ class MyListener():
     ser = serial.Serial()
     ser.port = 'COM5'
     ser.baudrate = 9600
-    ser.timeout = 1
+    ser.timeout = 2
     ser.setDTR(False)
 
     ser.open()
     print ("Python value sent: ")
+    #bytes = str.encode(sys.argv[1].encode())
+    #ser.write(bytes)
     print (sys.argv[1].encode())
     ser.write(sys.argv[1].encode())
     time.sleep(1)
@@ -30,7 +32,7 @@ class MyListener():
     #ser.timeout = 1
     #ser.setDTR(False)
     #ser.open()
-    #time.sleep(2)
+    #time.sleep(4)
     #print ("Message from arduino: ")
     #msg = ser.read(ser.inWaiting())
     #while msg != "" :
