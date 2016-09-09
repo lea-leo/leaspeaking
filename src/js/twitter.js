@@ -23,11 +23,11 @@ Twitter.streamTwitter = function() {
 
 	var stream = client.stream('statuses/filter', {track: 'sqli_leo'});
 
-	stream.on('data', function(tweet) {
-		console.log("Réception du tweet de " + tweet.user.name);
-		var message = new Tweet(tweet.user.name, tweet.user.screen_name, tweet.text);
-		console.log("Message du tweet : " + message.text);
-		Twitter.process.send({action: "SHOW_TWEET", text: message});
+	stream.on('data', function(tweetReceived) {
+		console.log("Réception du tweet de " + tweetReceived.user.name);
+		var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
+		console.log("Message du tweet : " + tweet.text);
+		Twitter.process.send({action: "SHOW_TWEET", tweet: tweet});
 	});
 
 	stream.on('error', function(error) {

@@ -3,10 +3,13 @@ var cluster = require('cluster');
 var Arduino = require("./arduino");
 var Twitter = require("./twitter");
 
+import Tweet from "./models/tweet";
+
 var freshTweets = [];
 var historicTweets = [];
 
 var isTweetDisplayed = false;
+var isLeaSpeaking  = true;
 
 var clusterArduino;
 var clusterTwitter;
@@ -35,77 +38,84 @@ if (cluster.isMaster) {
 	// Fork workers.
 	clusterArduino = cluster.fork({type: "CLUSTER_ARDUINO"});
 
-/*    clusterArduino.on('exit', function(deadWorker, code, signal) {
-        // Restart the worker
-        clusterArduino = cluster.fork();
-
-        // Note the process IDs
-        var newPID = clusterArduino.process.pid;
-        var oldPID = deadWorker.process.pid;
-
-        // Log the event
-        console.log('worker '+oldPID+' died.');
-        console.log('worker '+newPID+' born.');
-    });*/
-
 	// Ajout du handler message pour le cluster Twitter
 	clusterTwitter.on('message', function(msg) {
-		console.log("\nMaster !!!");
+		console.log("\nMaster !!!" + msg.tweet);
+        var tweet = msg.tweet;
 		if (msg.action == "SHOW_TWEET") {
 		  console.log("j'ai un tweet à envoyé à l'arduino");
-          freshTweets.push(msg.text);
+          if (tweet.userName == 'Devfest Léa' &&  tweet.screenName == 'devfest_lea') {
+              if (tweet.text == '@sqli_leo stop') {
+                console.log('Je suis passé dans le Léa stop');
+                  isLeaSpeaking = false;
+                  var stopTweet = new Tweet('', '', '  Tweetez moi sur                          @devfest_lea');
+                  clusterArduino.send(stopTweet);
+              } else  if (tweet.text == '@sqli_leo start') {
+                  console.log('Je suis passé dans le Léa start');
+                  isLeaSpeaking = true;
+              }
+          }
+          if (isLeaSpeaking && tweet.text != '@sqli_leo start') {
+              freshTweets.push(tweet);
+              console.log("Affichage du premier tweet nouveau !");
+              isTweetDisplayed = true;
+              var freshTweet = freshTweets[0];
+              console.log(freshTweet);
+              clusterArduino.send(freshTweet);
+              freshTweets.splice(0, 1);
+          }
 		}
-
-        console.log("Affichage du premier tweet nouveau !");
-        isTweetDisplayed = true;
-        var freshTweet = freshTweets[0];
-        console.log(freshTweet);
-        clusterArduino.send(freshTweet);
-        freshTweets.splice(0, 1);
-
-
+        /*if (isLeaSpeaking && tweet.text != '@sqli_leo start') {
+            console.log("Affichage du premier tweet nouveau !");
+            isTweetDisplayed = true;
+            var freshTweet = freshTweets[0];
+            console.log(freshTweet);
+            clusterArduino.send(freshTweet);
+            freshTweets.splice(0, 1);
+        }*/
 
 	});
 
 	// Ajout du handler message pour le cluster Arduino
 	clusterArduino.on('message', function(msg) {
 		var tweet = msg.tweet;
-		if (msg.action == "END_SHOW_TWEET_ON_ARDUINO") {
-          isTweetDisplayed = false;
-		  console.log("j'ai un tweet terminé : " + tweet.fresh);
-          if (tweet.fresh) {
-              console.log("Ceci est un tweet neuf " + tweet);
-              tweet.fresh = false;
-              historicTweets.push(tweet);
-          }
-          var index = freshTweets.indexOf(tweet);
-          freshTweets.splice(index, 1);
-          console.log("LE TABLEAU DES TWEETS DIFFUSE (HISTORIC) APRES DIFFUSION");
-          console.log(historicTweets);
-          console.log("LE TABLEAU DES TWEETS A DIFFUSE (FRESH) APRES DIFFUSION");
-          console.log(freshTweets);
-		}
+        if (isLeaSpeaking) {
+            if (msg.action == "END_SHOW_TWEET_ON_ARDUINO") {
+              isTweetDisplayed = false;
+              console.log("j'ai un tweet terminé : " + tweet.fresh);
+              if (tweet.fresh) {
+                  console.log("Ceci est un tweet neuf " + tweet);
+                  tweet.fresh = false;
+                  historicTweets.push(tweet);
+              }
+              var index = freshTweets.indexOf(tweet);
+              freshTweets.splice(index, 1);
+              console.log("LE TABLEAU DES TWEETS DIFFUSE (HISTORIC) APRES DIFFUSION");
+              console.log(historicTweets);
+              console.log("LE TABLEAU DES TWEETS A DIFFUSE (FRESH) APRES DIFFUSION");
+              console.log(freshTweets);
+            }
 
 
-        if (freshTweets.length > 0) {
-            console.log("Affichage d'un tweet nouveau !");
-            isTweetDisplayed = true;
-            var freshTweet = freshTweets[0];
-            console.log(freshTweet);
-            clusterArduino.send(freshTweet);
-            freshTweets.splice(0, 1);
+            if (freshTweets.length > 0) {
+                console.log("Affichage d'un tweet nouveau !");
+                isTweetDisplayed = true;
+                var freshTweet = freshTweets[0];
+                console.log(freshTweet);
+                clusterArduino.send(freshTweet);
+                freshTweets.splice(0, 1);
+            }
+            if (historicTweets.length > 10) {
+                historicTweets  = historicTweets.slice(0, 10);
+            }
+            if (historicTweets.length > 0) {
+                console.log("Affichage d'un tweet historique !");
+                isTweetDisplayed = true;
+                console.log(historicTweets);
+                var historicTweet = historicTweets[Math.floor(Math.random() * historicTweets.length)];
+                clusterArduino.send(historicTweet);
+            }
         }
-        if (historicTweets.length > 10) {
-            historicTweets  = historicTweets.slice(0, 10);
-        }
-        if (historicTweets.length > 0) {
-            console.log("Affichage d'un tweet historique !");
-            isTweetDisplayed = true;
-            console.log(historicTweets);
-            var historicTweet = historicTweets[Math.floor(Math.random() * historicTweets.length)];
-            clusterArduino.send(historicTweet);
-        }
-
 	});
 
 	// Temps de latence pour permettre l'initialisation des workers

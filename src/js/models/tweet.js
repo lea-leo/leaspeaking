@@ -1,10 +1,4 @@
 export default class Tweet {
-	/*get fresh() {
-		return 'getter';
-	}
-	set fresh(value) {
-		console.log('setter: '+value);
-	}*/
 
   	constructor(userName, screenName, text) {
     	this.userName = userName;
@@ -15,8 +9,11 @@ export default class Tweet {
   	}
 
 	getTweet() {
-  		//return this.replaceAccent(this.userName) + "(@" + this.replaceAccent(this.screenName) + ") : " + this.replaceAccent(this.text);
-		return "@" + this.replaceAccent(this.screenName) + " - " + this.replaceAccent(this.text);
+		if (this.screenName != '') {
+			return "@" + this.replaceAccent(this.screenName) + " - " + this.replaceAccent(this.text);
+		} else {
+			return this.replaceAccent(this.text);
+		}
   	} 
 
 	// Remplacement des accents pour compenser la librairie LiquidCrystal_I2C toute pourrie
