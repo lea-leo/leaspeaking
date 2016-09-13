@@ -19,14 +19,11 @@ Arduino.writeDataOnSerial = function(msg) {
 	//console.log(msg);
 	var options = {
 		pythonPath: 'D:\\sqli\\outils\\Python34\\python',
-		args: [msg.LCDText],
+		args: ["{'commande':" + msg.commande + ", 'tweet':'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}"],
 		mode: 'text'
 	};
 
 	console.log("J'écris sur le port série de l'arduino : " + msg.LCDText);
-	/*setTimeout(function() {
-		Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
-	}, 10000);*/
 	var shell = new PythonShell('src/js/writeSerial.py', options);
 
 	/*shell.on('message', function(message) {
@@ -36,9 +33,6 @@ Arduino.writeDataOnSerial = function(msg) {
 
 	shell.end(function() {
 		setTimeout(function() {
-			//console.log("Le msg dans setTimeOut");
-			//console.log(msg);
-			//msg.fresh = false;
 			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
 			Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg});
 		}, 10000);

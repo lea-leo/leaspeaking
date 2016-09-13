@@ -1,12 +1,18 @@
 var Twitter = require("twitter");
 import Tweet from "./models/tweet";
 
+var client;
 /**
  * Consdtructeur.
  * @constructor
  */
 function Twitter () {
-
+	/*client = new Twitter({
+		"consumer_key": process.env.TWITTER_CONSUMER_KEY,
+		"consumer_secret": process.env.TWITTER_CONSUMER_SECRET,
+		"access_token_key": process.env.TWITTER_ACCESS_TOKEN_KEY,
+		"access_token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
+	});*/
 }
 
 /**
@@ -14,7 +20,7 @@ function Twitter () {
  * Les credentials sont fixés par des variables d'environnement
  */
 Twitter.streamTwitter = function() {
-	var client = new Twitter({
+	client = new Twitter({
 		"consumer_key": process.env.TWITTER_CONSUMER_KEY,
 		"consumer_secret": process.env.TWITTER_CONSUMER_SECRET,
 		"access_token_key": process.env.TWITTER_ACCESS_TOKEN_KEY,
@@ -44,7 +50,22 @@ Twitter.messageHandler = function(msg) {
 	console.log("\nDéclenchement de la partie Twitter !!!");
 	if (msg.action == "LISTEN_TWEET") {
 		Twitter.streamTwitter();
+	} else if (msg.action == "SEND_TWEET") {
+		console.log("Un tweet gagnant");
+		Twitter.sendTweet(msg.winner);
 	}
+};
+
+
+
+Twitter.sendTweet = function(winner) {
+	console.log("envoi du tweet gagnant");
+
+	client.post('statuses/update', {status: '@' + winner + ' a gagné un panier garni'},  function(error, tweet, response) {
+		if(error) throw error;
+		console.log(tweet);  // Tweet body.
+		console.log(response);  // Raw response object.
+	});
 };
 
 module.exports = Twitter;
