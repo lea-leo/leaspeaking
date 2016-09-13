@@ -19,3 +19,6 @@ client.post('direct_messages/new', {status: 'Bravo vous avez gagné un stylo SQL
   console.log(tweet);  // Tweet body. 
   console.log(response);  // Raw response object. 
 });
+
+http://rcarduino.blogspot.fr/2012/04/servo-problems-with-arduino-part-1.html
+http://www.robotoid.com/appnotes/arduino-operating-two-servos.html
