@@ -62,9 +62,10 @@ Twitter.sendTweet = function(winner) {
 	console.log("envoi du tweet gagnant");
 
 	client.post('statuses/update', {status: '@' + winner + ' a gagné un panier garni'},  function(error, tweet, response) {
-		if(error) throw error;
-		console.log(tweet);  // Tweet body.
-		console.log(response);  // Raw response object.
+		//if(error) throw error;
+		console.log("Un gagnant a été tweeté");
+        //console.log(tweet);  // Tweet body.
+		//console.log(response);  // Raw response object.
 	});
 };
 

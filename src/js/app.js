@@ -5,6 +5,10 @@ var cluster = require('cluster');
 var Arduino = require("./arduino");
 var Twitter = require("./twitter");
 
+var fs = require('fs');
+
+var rankFile = 'rank.txt';
+
 // Le modèle Tweet
 import Tweet from "./models/tweet";
 
@@ -41,7 +45,7 @@ var isLeaSpeaking  = true;
  * Indique le numéro d'arrivée du tweet.
  * Il faut prévoir la sauvegarde pour chaque twet reçu
  */
-var rank = 1;
+var rank;
 
 /*
  * Les clusters Node
@@ -87,6 +91,8 @@ if (cluster.isWorker) {
  */
 if (cluster.isMaster) {
 
+    readFile();
+
 	// Fork workers.
 	clusterTwitter = cluster.fork({type: "CLUSTER_TWITTER"});
   
@@ -115,14 +121,19 @@ if (cluster.isMaster) {
 
           // Lancement de l'affichage du premier tweet
           if (isLeaSpeaking && tweet.text != '@sqli_leo start') {
-              if (rank = 1)  {
+              rank =  parseInt(rank) + 1;
+              if (rank == 11)  {
                   clusterTwitter.send({action: "SEND_TWEET", winner: tweet.screenName});
               }
+              console.log("Le numéro de tweet est " + rank);
               tweet.rank = rank;
-              rank =  rank + 1;
+
+              saveRank(rank);
               tweet.commande  = USUAL_SUSPECTS;
               freshTweets.push(tweet);
-              console.log("Affichage du premier tweet nouveau !");
+              console.log("**********************************************");
+              console.log("**       Affichage du 1er tweet             **");
+              console.log("**********************************************");
               isTweetDisplayed = true;
               var freshTweet = freshTweets[0];
               console.log(freshTweet);
@@ -147,18 +158,20 @@ if (cluster.isMaster) {
               }
               var index = freshTweets.indexOf(tweet);
               freshTweets.splice(index, 1);
-              console.log("LE TABLEAU DES TWEETS DIFFUSE (HISTORIC) APRES DIFFUSION");
+              /*console.log("LE TABLEAU DES TWEETS DIFFUSE (HISTORIC) APRES DIFFUSION");
               console.log(historicTweets);
               console.log("LE TABLEAU DES TWEETS A DIFFUSE (FRESH) APRES DIFFUSION");
-              console.log(freshTweets);
+              console.log(freshTweets);*/
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
             if (freshTweets.length > 0) {
-                console.log("Affichage d'un tweet nouveau !");
+                console.log("**********************************************");
+                console.log("**       Affichage d'un tweet nouveau !     **");
+                console.log("**********************************************");
                 isTweetDisplayed = true;
                 var freshTweet = freshTweets[0];
-                console.log(freshTweet);
+                //console.log(freshTweet);
                 clusterArduino.send(freshTweet);
                 freshTweets.splice(0, 1);
             }
@@ -188,4 +201,14 @@ if (cluster.isMaster) {
 
 }
 
+function readFile() {
+    console.log("Reading file synchronously");
+    //rank  = parseInt(fs.readFileSync(rankFile, "utf8")) + 1;
+    rank  = fs.readFileSync(rankFile, "utf8");
+    console.log("Lecture du rang "  + rank);
+}
+
+function saveRank(rank) {
+    fs.writeFileSync(rankFile, rank, {"encoding":'utf8'});
+}
 
