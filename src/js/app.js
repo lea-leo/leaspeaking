@@ -8,6 +8,7 @@ var Twitter = require("./twitter");
 var fs = require('fs');
 
 var rankFile = 'rank.txt';
+var gamificationFile = 'gamification.json';
 
 // Le modèle Tweet
 import Tweet from "./models/tweet";
@@ -56,11 +57,52 @@ var clusterTwitter;
 /*
  * Listes des commandes d'action pour Léa
  */
-const FIGHT_CLUB = 1;
+/*const FIGHT_CLUB = 1;
 const USUAL_SUSPECTS = 2;
 const AMELIE_POULAIN = 3;
-const TWIN_PEAKS = 4;
+const TWIN_PEAKS = 4;*/
+var classicCommands = ["AMELIE_POULAIN", "TWIN_PEAKS"];
 
+
+/*
+ * Liste des paliers gagnants
+ */
+var gamification;
+/*= {
+    "PALIER_1":{"RANK":15, "COMMAND": "FIGHT_CLUB"},
+    "PALIER_2":{"RANK":30, "COMMAND": "AMELIE_POULAIN"},
+    "PALIER_3":{"RANK":100, "COMMAND": "TWIN_PEAKS"}
+};*/
+
+/*
+ * Constante représentant les textes des tweets pour arrêter ou démarrer léa
+ * Cela représente aussi le texte qu'affiche Léa quand elle est en pause.
+ */
+const TWEET_LEA_START = '@sqli_leo start';
+const TWEET_LEA_STOP = '@sqli_leo stop';
+const TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
+
+
+/*
+ * Constantes des différentes commandes des clusters.
+ */
+var processConst = {
+    TYPE: {
+        CLUSTER_TWITTER: 'CLUSTER_TWITTER',
+        CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
+    },
+    ACTION: {
+        SHOW_TWEET: 'SHOW_TWEET',
+        SEND_TWEET: 'SEND_TWEET',
+        LISTEN_TWEET: 'LISTEN_TWEET',
+        END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
+    }
+};
+
+/*
+ * Compte twitter des admin de Léa
+ */
+var admins = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
 
 /**
  * Cas quand le cluster est esclave. Il ne peut alors s'agir que
@@ -73,11 +115,11 @@ if (cluster.isWorker) {
 
   console.log('Worker ' + process.pid + ' has started.');
 
-  if (process.env['type'] == "CLUSTER_TWITTER") {
+  if (process.env['type'] == processConst.TYPE.CLUSTER_TWITTER) {
     console.log('Je fixe le process pour twitter');
     Twitter.process = process;
 	process.on('message', Twitter.messageHandler);
-  } else if (process.env['type'] == "CLUSTER_ARDUINO") {
+  } else if (process.env['type'] == processConst.TYPE.CLUSTER_ARDUINO) {
     console.log('Je fixe le process pour arduino');
     Arduino.process = process;
 	process.on('message', Arduino.messageHandler);
@@ -91,48 +133,53 @@ if (cluster.isWorker) {
  */
 if (cluster.isMaster) {
 
-    readFile();
+    updateGamification();
 
-	// Fork workers.
-	clusterTwitter = cluster.fork({type: "CLUSTER_TWITTER"});
+    updateRankTweet();
+
+    // Fork workers.
+	clusterTwitter = cluster.fork({type: processConst.TYPE.CLUSTER_TWITTER});
   
 	// Fork workers.
-	clusterArduino = cluster.fork({type: "CLUSTER_ARDUINO"});
+	clusterArduino = cluster.fork({type: processConst.TYPE.CLUSTER_ARDUINO});
 
 	// Ajout du handler message pour le cluster Twitter
 	clusterTwitter.on('message', function(msg) {
-		console.log("\nMaster !!!" + msg.tweet);
+	    // TODO Code Wil clusterTwitter.onMessage(msg);
         var tweet = msg.tweet;
-		if (msg.action == "SHOW_TWEET") {
+		if (msg.action == processConst.ACTION.SHOW_TWEET) {
 		  console.log("j'ai un tweet à envoyé à l'arduino");
 
           // Gestion de l'arrêt et du redémarrage à distance de Léa
-          if (tweet.userName == 'Devfest Léa' &&  tweet.screenName == 'devfest_lea') {
-              if (tweet.text == '@sqli_leo stop') {
-                console.log('Je suis passé dans le Léa stop');
-                  isLeaSpeaking = false;
-                  var stopTweet = new Tweet('', '', '  Tweetez moi sur                          @devfest_lea');
-                  clusterArduino.send(stopTweet);
-              } else  if (tweet.text == '@sqli_leo start') {
-                  console.log('Je suis passé dans le Léa start');
-                  isLeaSpeaking = true;
-              }
-          }
+          startAndStopLea(tweet);
 
-          // Lancement de l'affichage du premier tweet
-          if (isLeaSpeaking && tweet.text != '@sqli_leo start') {
-              rank =  parseInt(rank) + 1;
-              if (rank == 11)  {
-                  clusterTwitter.send({action: "SEND_TWEET", winner: tweet.screenName});
-              }
-              console.log("Le numéro de tweet est " + rank);
-              tweet.rank = rank;
+          // Mise à jour des paliers
 
-              saveRank(rank);
-              tweet.commande  = USUAL_SUSPECTS;
+
+          // Configuration et stockage d'un tweet récemment reçu
+          if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
+              if (admins.indexOf(tweet.screenName) == -1) {
+                  rank =  parseInt(rank) + 1;
+              }
+              var gamificationPalier = isTweetWinner();
+              if (gamificationPalier != null)  {
+                  clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
+                  tweet.commande  = gamificationPalier.COMMAND;
+              } else {
+                  tweet.commande  = getRandomCommand();
+              }
+              if (admins.indexOf(tweet.screenName) == -1) {
+                  console.log("Le numéro de tweet est " + rank);
+                  tweet.rank = rank;
+              } else {
+                  console.log("Le numéro de tweet est admin");
+                  tweet.rank = "ADMIN";
+              }
+
+              saveRankTweet(rank);
               freshTweets.push(tweet);
               console.log("**********************************************");
-              console.log("**       Affichage du 1er tweet             **");
+              console.log("**     Récupération d'un tweet récent       **");
               console.log("**********************************************");
               isTweetDisplayed = true;
               var freshTweet = freshTweets[0];
@@ -148,7 +195,7 @@ if (cluster.isMaster) {
 	clusterArduino.on('message', function(msg) {
 		var tweet = msg.tweet;
         if (isLeaSpeaking) {
-            if (msg.action == "END_SHOW_TWEET_ON_ARDUINO") {
+            if (msg.action == processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
               isTweetDisplayed = false;
               console.log("j'ai un tweet terminé : " + tweet.fresh);
               if (tweet.fresh) {
@@ -158,10 +205,6 @@ if (cluster.isMaster) {
               }
               var index = freshTweets.indexOf(tweet);
               freshTweets.splice(index, 1);
-              /*console.log("LE TABLEAU DES TWEETS DIFFUSE (HISTORIC) APRES DIFFUSION");
-              console.log(historicTweets);
-              console.log("LE TABLEAU DES TWEETS A DIFFUSE (FRESH) APRES DIFFUSION");
-              console.log(freshTweets);*/
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
@@ -196,19 +239,95 @@ if (cluster.isMaster) {
 	// avant de lancer l'API streaming Twitter
 	setTimeout(function() {
 		console.log("Branchement de l'API Streaming Twitter !!!\n");
-		clusterTwitter.send({action: "LISTEN_TWEET"});
+		clusterTwitter.send({action: processConst.ACTION.LISTEN_TWEET});
 	}, 1000);
 
 }
 
-function readFile() {
-    console.log("Reading file synchronously");
-    //rank  = parseInt(fs.readFileSync(rankFile, "utf8")) + 1;
+/**
+ * Mets à jour le nombre de tweet réçu par Léa.
+ * Le nombre est stocké sur un fichier présent sur
+ * le raspberry.
+ */
+function updateRankTweet() {
     rank  = fs.readFileSync(rankFile, "utf8");
-    console.log("Lecture du rang "  + rank);
+    console.log("NOMBRE DE TWEET DEJA RECU : "  + rank);
 }
 
-function saveRank(rank) {
+/**
+ * Sauvegarde le nombre de tweets reçu par Léa.
+ * Le nombre est stocké sur un fichier présent sur
+ * le raspberry.
+ * @param rank le nombre de tweet reçu
+ */
+function saveRankTweet(rank) {
+    console.log("Sauvegarde du nombre de tweet");
     fs.writeFileSync(rankFile, rank, {"encoding":'utf8'});
 }
 
+
+/**
+ * Permets de démarrer ou de stopper Léa par l'envoi d'un
+ * simple tweet. L'expéditeur doit faire parti des admins
+ * et doit respecter un formalisme de texte.
+ *
+ * @param tweet le tweet reçu
+ */
+function startAndStopLea(tweet) {
+
+    if (admins.indexOf(tweet.screenName) != -1) {
+        console.log("Je suis un ADMIN");
+        if (tweet.text.startsWith(TWEET_LEA_STOP)) {
+            console.log('Je suis passé dans le Léa stop');
+            isLeaSpeaking = false;
+            var stopTweet = new Tweet('', '', TEXT_LEA_PAUSE);
+            clusterArduino.send(stopTweet);
+        } else  if (tweet.text.startsWith(TWEET_LEA_START)) {
+            console.log('Je suis passé dans le Léa start');
+            isLeaSpeaking = true;
+        }
+    }
+}
+
+/**
+ * Indique si le tweet courant est gagnant en atteignant un palier
+ * particulier. Ces paliers sont dynamiques et sont rechargé à chaque
+ * lecture de tweet.
+ *
+ * @returns {boolean} true si le tweet est gagnant, false sinon
+ */
+function isTweetWinner() {
+    var result = null;
+    for (var prop in gamification) {
+        if (rank == gamification[prop].RANK) {
+            console.log(prop + " atteint");
+            result = gamification[prop];
+        }
+    }
+    return result
+}
+
+/**
+ * Mets à jour les paliers gagnants.
+ */
+function updateGamification() {
+    //console.log("PALIER LEA AVANT : "  + JSON.stringify(gamification, null, 2));
+    gamification  = JSON.parse(fs.readFileSync(gamificationFile, "utf8"));
+    //console.log("PALIER LEA APRES : "  + JSON.stringify(gamification, null, 2));
+    //console.log(gamification["PALIER_2"].RANK);
+    //console.log(gamification["PALIER_2"].COMMAND);
+    console.log(getRandomCommand());
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomCommand() {
+    //var randomNumber = getRandomInt(0,9);
+    if (getRandomInt(0,9)%2 == 0) {
+        return classicCommands[0];
+    } else {
+        return classicCommands[1];
+    }
+}

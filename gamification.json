@@ -1,0 +1,14 @@
+{
+  "PALIER_1":{
+    "RANK":20,
+    "COMMAND": "FIGHT_CLUB"
+  },
+  "PALIER_2":{
+    "RANK":40,
+    "COMMAND": "AMELIE_POULAIN"
+  },
+  "PALIER_3":{
+    "RANK":150,
+    "OMMAND": "TWIN_PEAKS"
+  }
+}

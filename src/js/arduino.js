@@ -1,3 +1,12 @@
+var processConst = {
+    ACTION: {
+        SHOW_TWEET: 'SHOW_TWEET',
+        SEND_TWEET: 'SEND_TWEET',
+        LISTEN_TWEET: 'LISTEN_TWEET',
+        END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
+    }
+};
+
 /**
  * Consdtructeur.
  * @constructor
@@ -34,7 +43,7 @@ Arduino.writeDataOnSerial = function(msg) {
 	shell.end(function() {
 		setTimeout(function() {
 			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-			Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg});
+			Arduino.process.send({action: processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: msg});
 		}, 10000);
 	});
 
