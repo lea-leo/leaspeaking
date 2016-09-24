@@ -26,19 +26,19 @@ Arduino.writeDataOnSerial = function(msg) {
 	var PythonShell = require('python-shell');
 	//console.log("Le msg dans writeDataOnSerial");
 	//console.log(msg);
-	var options = {
+    var options = {
 		pythonPath: 'D:\\sqli\\outils\\Python34\\python',
-		args: ["{'commande':" + msg.commande + ", 'tweet':'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}"],
+		args: ["{ 'commande': '" + msg.commande + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}"],
 		mode: 'text'
 	};
 
 	console.log("J'écris sur le port série de l'arduino : " + msg.LCDText);
 	var shell = new PythonShell('src/js/writeSerial.py', options);
 
-	/*shell.on('message', function(message) {
+	shell.on('message', function(message) {
 		console.log("Je suis dans la section message");
 		console.log(message);
-	});*/
+	});
 
 	shell.end(function() {
 		setTimeout(function() {
