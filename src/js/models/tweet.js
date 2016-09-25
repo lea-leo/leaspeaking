@@ -13,7 +13,7 @@ export default class Tweet {
 
 	getTweet() {
 		if (this.screenName != '') {
-			return "@" + this.replaceAccent(this.screenName) + " - " + this.replaceAccent(this.text);
+			return "@" + this.replaceAccent(this.screenName) + " : " + this.replaceAccent(this.text);
 		} else {
 			return this.replaceAccent(this.text);
 		}
