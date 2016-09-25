@@ -8,6 +8,7 @@ var Twitter = require("./twitter");
 var fs = require('fs');
 
 var rankFile = 'rank.txt';
+var tweetsDB = 'tweets.json';
 var gamificationFile = 'gamification.json';
 
 // Le modèle Tweet
@@ -177,6 +178,7 @@ if (cluster.isMaster) {
               }
 
               saveRankTweet(rank);
+              saveTweet(tweet);
               freshTweets.push(tweet);
               console.log("**********************************************");
               console.log("**     Récupération d'un tweet récent       **");
@@ -263,6 +265,21 @@ function updateRankTweet() {
 function saveRankTweet(rank) {
     console.log("Sauvegarde du nombre de tweet");
     fs.writeFileSync(rankFile, rank, {"encoding":'utf8'});
+}
+
+function saveTweet(tweet) {
+    console.log("Sauvegarde du tweet courant");
+    //fs.writeFileSync(tweetsDB, rank, {"encoding":'utf8'});
+
+    var configFile = fs.readFileSync(tweetsDB);
+    var config = JSON.parse(configFile);
+    config.push(tweet);
+    var configJSON = JSON.stringify(config);
+    fs.writeFileSync(tweetsDB, configJSON);
+
+    //appendObject({OnetimeCode : WEAS_Server_NewOneTimeCode});
+
+
 }
 
 

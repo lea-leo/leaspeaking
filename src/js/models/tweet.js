@@ -2,12 +2,13 @@ export default class Tweet {
 
   	constructor(userName, screenName, text) {
     	this.userName = userName;
-    	this.screenName = screenName; //(@feef)
-    	this.text  = text;
-		this.LCDText = this.getTweet();
-		this.fresh = true;
-		this.rank = 1;
-		this.commande = 1;
+        this.screenName = screenName; //(@feef)
+        this.text  = text;
+        this.LCDText = this.getTweet();
+        this.fresh = true;
+        this.rank = 1;
+        this.commande = 1;
+        this.timestamp = Date.now();
   	}
 
 	getTweet() {
