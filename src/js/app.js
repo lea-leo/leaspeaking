@@ -7,6 +7,10 @@ var Twitter = require("./twitter");
 
 var fs = require('fs');
 
+// Audio
+var lame = require('lame');
+var Speaker = require('speaker');
+
 var rankFile = 'rank.txt';
 var tweetsDB = 'tweets.json';
 var gamificationFile = 'gamification.json';
@@ -134,6 +138,9 @@ if (cluster.isWorker) {
  */
 if (cluster.isMaster) {
 
+    playSound("ouverture");
+    //playSound("foo");
+
     updateGamification();
 
     updateRankTweet();
@@ -186,6 +193,8 @@ if (cluster.isMaster) {
               isTweetDisplayed = true;
               var freshTweet = freshTweets[0];
               console.log(freshTweet);
+              chooseSound(tweet);
+
               clusterArduino.send(freshTweet);
               freshTweets.splice(0, 1);
           }
@@ -347,4 +356,28 @@ function getRandomCommand() {
     } else {
         return classicCommands[1];
     }
+}
+
+function chooseSound(tweet) {
+    if (tweet.text.startsWith("cri") || tweet.text.startsWith("@sqli_leo cri")) {
+        playSound("gemissement");
+    } else if (tweet.text.startsWith("rigole") || tweet.text.startsWith("@sqli_leo rigole")) {
+        playSound("sos");
+    } else if (tweet.text.startsWith("gangster") || tweet.text.startsWith("@sqli_leo gangster")) {
+        playSound("affranchis");
+    } else if (tweet.text.startsWith("colle") || tweet.text.startsWith("@sqli_leo colle")) {
+        playSound("colle");
+    } else if (tweet.text.startsWith("diable") || tweet.text.startsWith("@sqli_leo diable")) {
+        playSound("diable");
+    } else {
+        playSound("foo");
+    }
+}
+
+function playSound(file) {
+    fs.createReadStream('sounds/' + file + '.mp3')
+        .pipe(new lame.Decoder())
+        .on('format', function (format) {
+            this.pipe(new Speaker(format));
+        });
 }

@@ -27,7 +27,7 @@ Arduino.writeDataOnSerial = function(msg) {
 	//console.log("Le msg dans writeDataOnSerial");
 	//console.log(msg);
     var options = {
-		pythonPath: 'D:\\sqli\\outils\\Python34\\python',
+		pythonPath: 'C:\\Python27\\python',//process.env.PYTHON_PATH'D:\\sqli\\outils\\Python34\\python',
 		args: ["{ 'commande': '" + msg.commande + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}"],
 		mode: 'text'
 	};
