@@ -1,15 +1,52 @@
 {
-  // Faire de 20-40-60-80-100-120-140-160-180-200
-  "PALIER_1":{
-    "RANK":20,
-    "COMMAND": "FIGHT_CLUB"
+  "level_1":{
+    "rank":20,
+    "motion": "FIGHT_CLUB",
+    "sound": "sos"
   },
-  "PALIER_2":{
-    "RANK":40,
-    "COMMAND": "AMELIE_POULAIN"
+  "level_2":{
+    "rank":40,
+    "motion": "FIGHT_CLUB",
+    "sound": "colle"
   },
-  "PALIER_3":{
-    "RANK":150,
-    "OMMAND": "TWIN_PEAKS"
+  "level_3":{
+    "rank":60,
+    "motion": "AMELIE_POULAIN",
+    "sound": "diable"
+  },
+  "level_4":{
+    "rank":80,
+    "motion": "AMELIE_POULAIN",
+    "sound": "affranchis"
+  },
+  "level_5":{
+    "rank":100,
+    "motion": "TWIN_PEAKS",
+    "sound": "gemissement"
+  },
+  "level_6":{
+    "rank":120,
+    "motion": "TWIN_PEAKS",
+    "sound": "sos"
+  },
+  "level_7":{
+    "rank":140,
+    "motion": "AVATAR",
+    "sound": "colle"
+  },
+  "level_8":{
+    "rank":160,
+    "motion": "AVATAR",
+    "sound": "diable"
+  },
+  "level_9":{
+    "rank":180,
+    "motion": "ROCKY",
+    "sound": "affranchis"
+  },
+  "level_10":{
+    "rank":200,
+    "motion": "ROCKY",
+    "sound": "gemissement"
   }
 }
