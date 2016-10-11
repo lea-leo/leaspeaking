@@ -7,7 +7,7 @@ export default class Tweet {
         this.LCDText = this.getTweet();
         this.fresh = true;
         this.rank = 1;
-        this.commande = 1;
+        this.motion = 1;
         this.timestamp = Date.now();
   	}
 

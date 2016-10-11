@@ -11,8 +11,11 @@ var fs = require('fs');
 var lame = require('lame');
 var Speaker = require('speaker');
 
+// Fichier contenant le nombre de tweets reçu
 var rankFile = 'rank.txt';
+// Contenus de l'ensemble des tweets reçu
 var tweetsDB = 'tweets.json';
+// Fichier contenant les paliers de la gamification
 var gamificationFile = 'gamification.json';
 
 // Le modèle Tweet
@@ -62,22 +65,12 @@ var clusterTwitter;
 /*
  * Listes des commandes d'action pour Léa
  */
-/*const FIGHT_CLUB = 1;
-const USUAL_SUSPECTS = 2;
-const AMELIE_POULAIN = 3;
-const TWIN_PEAKS = 4;*/
 var classicCommands = ["AMELIE_POULAIN", "TWIN_PEAKS"];
-
 
 /*
  * Liste des paliers gagnants
  */
 var gamification;
-/*= {
-    "PALIER_1":{"RANK":15, "COMMAND": "FIGHT_CLUB"},
-    "PALIER_2":{"RANK":30, "COMMAND": "AMELIE_POULAIN"},
-    "PALIER_3":{"RANK":100, "COMMAND": "TWIN_PEAKS"}
-};*/
 
 /*
  * Constante représentant les textes des tweets pour arrêter ou démarrer léa
@@ -123,11 +116,11 @@ if (cluster.isWorker) {
   if (process.env['type'] == processConst.TYPE.CLUSTER_TWITTER) {
     console.log('Je fixe le process pour twitter');
     Twitter.process = process;
-	process.on('message', Twitter.messageHandler);
+    process.on('message', Twitter.messageHandler);
   } else if (process.env['type'] == processConst.TYPE.CLUSTER_ARDUINO) {
     console.log('Je fixe le process pour arduino');
     Arduino.process = process;
-	process.on('message', Arduino.messageHandler);
+    process.on('message', Arduino.messageHandler);
   }
 }
 
@@ -138,41 +131,42 @@ if (cluster.isWorker) {
  */
 if (cluster.isMaster) {
 
+    // Salutations de Léa
     playSound("ouverture");
-    //playSound("foo");
-
+    
+    // Mise à jour des paliers
     updateGamification();
 
+    // Mise à jour du nombre de tweet reçu
     updateRankTweet();
 
     // Fork workers.
-	clusterTwitter = cluster.fork({type: processConst.TYPE.CLUSTER_TWITTER});
+    clusterTwitter = cluster.fork({type: processConst.TYPE.CLUSTER_TWITTER});
   
-	// Fork workers.
-	clusterArduino = cluster.fork({type: processConst.TYPE.CLUSTER_ARDUINO});
+    // Fork workers.
+    clusterArduino = cluster.fork({type: processConst.TYPE.CLUSTER_ARDUINO});
 
-	// Ajout du handler message pour le cluster Twitter
-	clusterTwitter.on('message', function(msg) {
-	    // TODO Code Wil clusterTwitter.onMessage(msg);
-        var tweet = msg.tweet;
-		if (msg.action == processConst.ACTION.SHOW_TWEET) {
-		  console.log("j'ai un tweet à envoyé à l'arduino");
+    // Ajout du handler message pour le cluster Twitter
+    clusterTwitter.on('message', function(msg) {
+
+      // TODO Code Wil clusterTwitter.onMessage(msg);
+      var tweet = msg.tweet;
+
+      if (msg.action == processConst.ACTION.SHOW_TWEET) {
+        console.log("j'ai un tweet à envoyé à l'arduino");
 
           // Gestion de l'arrêt et du redémarrage à distance de Léa
           startAndStopLea(tweet);
-
-          // Mise à jour des paliers
-
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
               if (admins.indexOf(tweet.screenName) == -1) {
                   rank =  parseInt(rank) + 1;
               }
-              var gamificationPalier = isTweetWinner();
-              if (gamificationPalier != null)  {
+              var gamificationLevel = isTweetWinner();
+              if (gamificationLevel != null)  {
                   clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
-                  tweet.commande  = gamificationPalier.COMMAND;
+                  tweet.motion  = gamificationLevel.motion;
               } else {
                   tweet.commande  = getRandomCommand();
               }
@@ -193,12 +187,18 @@ if (cluster.isMaster) {
               isTweetDisplayed = true;
               var freshTweet = freshTweets[0];
               console.log(freshTweet);
-              chooseSound(tweet);
+              // Gestion du son pour Léa
+              if (gamificationLevel != null) {
+                playSound("winner");
+                gamificationLevel = null;
+              } else {
+                chooseSound(tweet);
+              }
 
               clusterArduino.send(freshTweet);
               freshTweets.splice(0, 1);
           }
-		}
+	}
 
 	});
 
@@ -212,6 +212,7 @@ if (cluster.isMaster) {
               if (tweet.fresh) {
                   console.log("Ceci est un tweet neuf " + tweet);
                   tweet.fresh = false;
+                  tweet.command = null;
                   historicTweets.push(tweet);
               }
               var index = freshTweets.indexOf(tweet);
@@ -278,17 +279,11 @@ function saveRankTweet(rank) {
 
 function saveTweet(tweet) {
     console.log("Sauvegarde du tweet courant");
-    //fs.writeFileSync(tweetsDB, rank, {"encoding":'utf8'});
-
     var configFile = fs.readFileSync(tweetsDB);
     var config = JSON.parse(configFile);
     config.push(tweet);
     var configJSON = JSON.stringify(config);
     fs.writeFileSync(tweetsDB, configJSON);
-
-    //appendObject({OnetimeCode : WEAS_Server_NewOneTimeCode});
-
-
 }
 
 
@@ -325,7 +320,7 @@ function startAndStopLea(tweet) {
 function isTweetWinner() {
     var result = null;
     for (var prop in gamification) {
-        if (rank == gamification[prop].RANK) {
+        if (rank == gamification[prop].rank) {
             console.log(prop + " atteint");
             result = gamification[prop];
         }
