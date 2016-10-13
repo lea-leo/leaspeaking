@@ -11,6 +11,7 @@ var fs = require('fs');
 var lame = require('lame');
 var Speaker = require('speaker');
 
+
 // Fichier contenant le nombre de tweets reçu
 var rankFile = 'rank.txt';
 // Contenus de l'ensemble des tweets reçu
@@ -274,7 +275,12 @@ function updateRankTweet() {
  */
 function saveRankTweet(rank) {
     console.log("Sauvegarde du nombre de tweet");
-    fs.writeFileSync(rankFile, rank, {"encoding":'utf8'});
+    try {
+        fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
+    } catch (err) {
+        console.log(err);
+    }
+
 }
 
 function saveTweet(tweet) {

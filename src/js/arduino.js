@@ -1,3 +1,5 @@
+var SerialPort = require('serialport');
+
 var processConst = {
     ACTION: {
         SHOW_TWEET: 'SHOW_TWEET',
@@ -6,6 +8,11 @@ var processConst = {
         END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
     }
 };
+
+
+// Port arduino
+var arduinoPortName;
+var arduinoPort;
 
 /**
  * Consdtructeur.
@@ -23,43 +30,15 @@ function Arduino () {
  * @param data les données à écrire sur le port série
  */
 Arduino.writeDataOnSerial = function(msg) {
-	var PythonShell = require('python-shell');
-	//console.log("Le msg dans writeDataOnSerial");
-	//console.log(msg);
-    var options = {
-		pythonPath: 'C:\\Python27\\python',//process.env.PYTHON_PATH'D:\\sqli\\outils\\Python34\\python',
-		args: ["{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}"],
-		mode: 'text'
-	};
+	// Envoi du tweet par le port série avec serialPort
+	console.log("Je suis dans writeDataOnSerial");
+	if(arduinoPort == '' || arduinoPort == undefined) {
+		console.log("Détermination du port de communication de l'Arduino");
+		getCurrentPort(msg);
+	} else {
+		writeDataOnArduinoSerial(msg);
+	}
 
-	console.log("J'écris sur le port série de l'arduino : " + msg.LCDText);
-	var shell = new PythonShell('src/js/writeSerial.py', options);
-
-	shell.on('message', function(message) {
-		console.log("Je suis dans la section message");
-		console.log(message);
-	});
-
-	shell.end(function() {
-		setTimeout(function() {
-			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-			Arduino.process.send({action: processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: msg});
-		}, 10000);
-	});
-
-
-	/*PythonShell.run('src/js/writeSerial.py', options, function (err, results) {
-	 if (err) {
-	 	console.log(err);
-	 	throw err;
-	 }
-	 //console.log("Le tweet est fini d'afficher par l'arduino !" + results);
-	 //Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
-	 return "coucou";
-	 }).end(function() {
-		console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-		Arduino.process.send({action: "END_SHOW_TWEET_ON_ARDUINO", tweet: msg.tweet});
-	});*/
 }
 
 /**
@@ -68,9 +47,71 @@ Arduino.writeDataOnSerial = function(msg) {
  * @param msg message contenant le type d'action à effectuer
  */
 Arduino.messageHandler = function(msg) {
-    //console.log("\nArduino !!!" + msg);
-    //console.log("\nArduino !!!" + msg);
 	Arduino.writeDataOnSerial(msg);
 };
 
+/**
+ * Détermine quel port correspond à l'arduino
+ * @param msg
+ */
+function getCurrentPort(msg) {
+	console.log("Je suis dans getCurrentPort");
+	SerialPort.list(function(err, result) {
+		console.log("Je suis dans list");
+		result.filter(function(val) {
+			if (val.manufacturer == "Arduino_LLC") {
+				arduinoPortName = val.comName;
+				arduinoPort = new SerialPort(arduinoPortName);
+				sendDataOnArduinoSerial(msg);
+				arduinoPort.on('open', function() {
+					console.log("Le port de l'Arduino est ouvert !!!");
+					writeDataOnArduinoSerial(msg);
+				});
+				// open errors will be emitted as an error event
+				arduinoPort.on('error', function(err) {
+					console.log('Error: ', err.message);
+				});
+			}
+		});
+	});
+}
+
+/**
+ * Ecriture sur le port série des données du tweet
+ * @param msg
+ */
+function sendDataOnArduinoSerial(msg) {
+
+	arduinoPort.on('open', function() {
+		console.log("Le port de l'Arduino est ouvert !!!");
+		//writeDataOnArduinoSerial(msg);
+		/*arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
+			if (err) {
+				return console.log('Error on write: ', err.message);
+			}
+			setTimeout(function() {
+				console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
+				Arduino.process.send({action: processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: msg});
+			}, 10000);
+		});*/
+	});
+
+	// open errors will be emitted as an error event
+	arduinoPort.on('error', function(err) {
+		console.log('Error: ', err.message);
+	});
+}
+
+function writeDataOnArduinoSerial(msg) {
+	console.log("J'écris le tweet sur l'arduino");
+	arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
+		if (err) {
+			return console.log('Error on write: ', err.message);
+		}
+		setTimeout(function() {
+			console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
+			Arduino.process.send({action: processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: msg});
+		}, 10000);
+	});
+}
 module.exports = Arduino;

@@ -1,3 +1,13 @@
+Bug restant :
+    Décalage temporel entre le son et l'affichage du tweet
+    L'affichage du tweet semble confus, pas dans le bon timming
+
+Reste à tester :
+    L'assemblage complet Leonardo + Raspberry
+    Tester et retester encore l'ensemble
+
+
+
 1 tweet arrive => transfert auprès de l'arduino => affichage
 Après ?? 
 
