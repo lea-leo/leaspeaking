@@ -11,6 +11,9 @@ var fs = require('fs');
 var lame = require('lame');
 var Speaker = require('speaker');
 
+// lodash
+var _ = require('lodash/array');
+
 
 // Fichier contenant le nombre de tweets reçu
 var rankFile = 'rank.txt';
@@ -101,7 +104,7 @@ var processConst = {
 /*
  * Compte twitter des admin de Léa
  */
-var admins = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
+var admins = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre"];
 
 /**
  * Cas quand le cluster est esclave. Il ne peut alors s'agir que
@@ -128,7 +131,7 @@ if (cluster.isWorker) {
 
 /**
  * Cas pour le cluster master. Il s'agit du chef d'orchestre.
- * Il crée et met en relation ses deux clusters esclave.
+ * Il crée et met en relation ses deux clusters esclaves.
  */
 if (cluster.isMaster) {
 
@@ -187,7 +190,6 @@ if (cluster.isMaster) {
               console.log("**     Récupération d'un tweet récent       **");
               console.log("**********************************************");
               isTweetDisplayed = true;
-              var freshTweet = freshTweets[0];
               // Gestion du son pour Léa
               if (gamificationLevel != null) {
                 playSound("winner");
@@ -195,9 +197,7 @@ if (cluster.isMaster) {
               } else {
                 chooseSound(tweet);
               }
-
-              clusterArduino.send(freshTweet);
-              freshTweets.splice(0, 1);
+              clusterArduino.send(tweet);
           }
 	}
 
@@ -217,8 +217,11 @@ if (cluster.isMaster) {
                     tweet.command = null;
                     historicTweets.push(tweet);
                 }
-                var index = freshTweets.indexOf(tweet);
-                freshTweets.splice(index, 1);
+                _.remove(freshTweets, function(currentObject) {
+                    return currentObject.userName === tweet.userName &&
+                        currentObject.screenName === tweet.screenName &&
+                        currentObject.text === tweet.text;
+                });
             }
 
             // Si des tweets plus récent sont apparu, on les affiche

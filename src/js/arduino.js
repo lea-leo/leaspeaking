@@ -23,13 +23,14 @@ function Arduino () {
 }
 
 /**
+ * Message handler pour la partie arduino
  * Ecrit le tweet sur le port série de l'Arduino.
  * A cause du DTR, la librairie npm serialport ne fonctionne pas
  * il faut alors passer par un script python qui va lui physiquement
  * écrire sur le port série de l'Arduino.
  * @param data les données à écrire sur le port série
  */
-Arduino.writeDataOnSerial = function(msg) {
+Arduino.messageHandler = function(msg) {
 	// Envoi du tweet par le port série avec serialPort
 	console.log("Je suis dans writeDataOnSerial");
 	if(arduinoPort == '' || arduinoPort == undefined) {
@@ -38,16 +39,6 @@ Arduino.writeDataOnSerial = function(msg) {
 	} else {
 		writeDataOnArduinoSerial(msg);
 	}
-
-}
-
-/**
- * Message handler pour la partie arduino
- * Il permet l'aiguillage au sein du code pour la partie arduino à effectuer
- * @param msg message contenant le type d'action à effectuer
- */
-Arduino.messageHandler = function(msg) {
-	Arduino.writeDataOnSerial(msg);
 };
 
 /**
@@ -62,7 +53,6 @@ function getCurrentPort(msg) {
 			if (val.manufacturer == "Arduino_LLC") {
 				arduinoPortName = val.comName;
 				arduinoPort = new SerialPort(arduinoPortName);
-				sendDataOnArduinoSerial(msg);
 				arduinoPort.on('open', function() {
 					console.log("Le port de l'Arduino est ouvert !!!");
 					writeDataOnArduinoSerial(msg);
@@ -77,31 +67,10 @@ function getCurrentPort(msg) {
 }
 
 /**
- * Ecriture sur le port série des données du tweet
+ * Ecriture du tweet sur le port série de l'Arduino à l'aide de la librairie
+ * Serialport. un setTimeout permet de fixer la durée de l'affichage à 10s par tweet.
  * @param msg
  */
-function sendDataOnArduinoSerial(msg) {
-
-	arduinoPort.on('open', function() {
-		console.log("Le port de l'Arduino est ouvert !!!");
-		//writeDataOnArduinoSerial(msg);
-		/*arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
-			if (err) {
-				return console.log('Error on write: ', err.message);
-			}
-			setTimeout(function() {
-				console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-				Arduino.process.send({action: processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: msg});
-			}, 10000);
-		});*/
-	});
-
-	// open errors will be emitted as an error event
-	arduinoPort.on('error', function(err) {
-		console.log('Error: ', err.message);
-	});
-}
-
 function writeDataOnArduinoSerial(msg) {
 	console.log("J'écris le tweet sur l'arduino");
 	arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
