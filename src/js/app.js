@@ -161,7 +161,9 @@ if (cluster.isMaster) {
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
+              console.log("JE SUIS DANS UPDATE RANK " + rank);
               if (admins.indexOf(tweet.screenName) == -1) {
+                  console.log("JE SUIS DANS UPDATE RANK");
                   rank =  parseInt(rank) + 1;
               }
               var gamificationLevel = isTweetWinner();
@@ -179,15 +181,13 @@ if (cluster.isMaster) {
                   tweet.rank = "ADMIN";
               }
 
-              saveRankTweet(rank);
-              saveTweet(tweet);
+
               freshTweets.push(tweet);
               console.log("**********************************************");
               console.log("**     Récupération d'un tweet récent       **");
               console.log("**********************************************");
               isTweetDisplayed = true;
               var freshTweet = freshTweets[0];
-              console.log(freshTweet);
               // Gestion du son pour Léa
               if (gamificationLevel != null) {
                 playSound("winner");
@@ -208,16 +208,17 @@ if (cluster.isMaster) {
 		var tweet = msg.tweet;
         if (isLeaSpeaking) {
             if (msg.action == processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
-              isTweetDisplayed = false;
-              console.log("j'ai un tweet terminé : " + tweet.fresh);
-              if (tweet.fresh) {
-                  console.log("Ceci est un tweet neuf " + tweet);
-                  tweet.fresh = false;
-                  tweet.command = null;
-                  historicTweets.push(tweet);
-              }
-              var index = freshTweets.indexOf(tweet);
-              freshTweets.splice(index, 1);
+                saveRankTweet(rank);
+                saveTweet(tweet);
+                isTweetDisplayed = false;
+                // On tansforme le tweet récemment affiché en tweet historisé
+                if (tweet.fresh) {
+                    tweet.fresh = false;
+                    tweet.command = null;
+                    historicTweets.push(tweet);
+                }
+                var index = freshTweets.indexOf(tweet);
+                freshTweets.splice(index, 1);
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
@@ -274,7 +275,7 @@ function updateRankTweet() {
  * @param rank le nombre de tweet reçu
  */
 function saveRankTweet(rank) {
-    console.log("Sauvegarde du nombre de tweet");
+    console.log("Sauvegarde du nombre de tweet" + rank);
     try {
         fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
     } catch (err) {
