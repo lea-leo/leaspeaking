@@ -46,6 +46,7 @@ var historicTweets = [];
  * tweet plus récent.
  */
 var isTweetDisplayed = false;
+var tweetDisplayed;
 
 /*
  * Indique si Léa est en état de marche ou pas.
@@ -156,16 +157,19 @@ if (cluster.isMaster) {
       var tweet = msg.tweet;
 
       if (msg.action == processConst.ACTION.SHOW_TWEET) {
-        console.log("j'ai un tweet à envoyé à l'arduino");
+       // console.log("j'ai un tweet à envoyé à l'arduino");
 
           // Gestion de l'arrêt et du redémarrage à distance de Léa
           startAndStopLea(tweet);
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
-              console.log("Ajout d'un tweet frais...");
+              //console.log("Ajout d'un tweet frais...");
               freshTweets.push(tweet);
+              console.log("freshTweets");
+              console.log(freshTweets);
               isTweetDisplayed = true;
+              tweetDisplayed = tweet;
               chooseSound(tweet);
               clusterArduino.send(tweet);
           }
@@ -190,7 +194,7 @@ if (cluster.isMaster) {
                 var gamificationLevel = isTweetWinner();
                 if (gamificationLevel != null)  {
                     clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
-                    tweet.motion  = gamificationLevel.motion;
+                    tweet.motion  = gamificationLevel.motion;0
                 } else {
                     tweet.commande  = getRandomCommand();
                 }
@@ -206,8 +210,8 @@ if (cluster.isMaster) {
                     tweet.command = null;
                     historicTweets.push(tweet);
                 }
-                //console.log("Tweet frais avant nettoyage" + freshTweets);
-                //console.log(freshTweets);
+                console.log("Tweet frais avant nettoyage" + freshTweets);
+                console.log(freshTweets);
                 // Suppression du tweet frais
                 _.remove(freshTweets, function(currentObject) {
                     /*console.log("currentObject.userName " + currentObject.userName);
@@ -223,8 +227,8 @@ if (cluster.isMaster) {
                         currentObject.screenName === tweet.screenName &&
                         currentObject.text === tweet.text;
                 });
-                //console.log("Tweet frais après nettoyage" + freshTweets);
-                //console.log(freshTweets);
+                console.log("Tweet frais après nettoyage" + freshTweets);
+                console.log(freshTweets);
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
@@ -234,16 +238,19 @@ if (cluster.isMaster) {
                 //console.log("**********************************************");
                 isTweetDisplayed = true;
                 var freshTweet = freshTweets[0];
-                console.log(freshTweet.text);
-                chooseSound(freshTweet);
-                clusterArduino.send(freshTweet);
+                if (tweetDisplayed != freshTweet) {
+                    console.log(freshTweet.text);
+                    chooseSound(freshTweet);
+                    clusterArduino.send(freshTweet);
+                }
             }
 
             // Si la liste des tweets historique est plus grande, le progamme la tronque
             if (historicTweets.length > 10) {
                 historicTweets  = historicTweets.slice(0, 10);
             }
-
+            console.log("historicTweets");
+            console.log(historicTweets);
             // Si il existe des tweets historique, le programme les affiche de manière aléatoire
             if (historicTweets.length > 0) {
                 //console.log("Affichage d'un tweet historique !");
