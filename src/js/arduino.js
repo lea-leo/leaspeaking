@@ -1,5 +1,7 @@
 var SerialPort = require('serialport');
 
+import Sound from "./sound";
+
 var processConst = {
     ACTION: {
         SHOW_TWEET: 'SHOW_TWEET',
@@ -74,6 +76,9 @@ function getCurrentPort(msg) {
 function writeDataOnArduinoSerial(msg) {
 	//console.log("J'écris le tweet sur l'arduino");
 	arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
+		if (msg.fresh) {
+			Sound.chooseSound(msg);
+		}
 		if (err) {
 			return console.log('Error on write: ', err.message);
 		}

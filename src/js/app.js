@@ -4,26 +4,11 @@ var cluster = require('cluster');
 
 var Arduino = require("./arduino");
 var Twitter = require("./twitter");
-
-var fs = require('fs');
-
-// Audio
-var lame = require('lame');
-var Speaker = require('speaker');
+import Sound from "./sound";
+import Utils from "./utils";
 
 // lodash
 var _ = require('lodash/array');
-
-
-// Fichier contenant le nombre de tweets reçu
-var rankFile = 'rank.txt';
-// Contenus de l'ensemble des tweets reçu
-var tweetsDB = 'tweets.json';
-// Fichier contenant les paliers de la gamification
-var gamificationFile = 'gamification.json';
-
-// Le modèle Tweet
-import Tweet from "./models/tweet";
 
 /*
  * La liste des tweets jamais affiché par l'Arduino.
@@ -68,11 +53,6 @@ var clusterArduino;
 var clusterTwitter;
 
 /*
- * Listes des commandes d'action pour Léa
- */
-var classicCommands = ["AMELIE_POULAIN", "TWIN_PEAKS"];
-
-/*
  * Liste des paliers gagnants
  */
 var gamification;
@@ -82,8 +62,6 @@ var gamification;
  * Cela représente aussi le texte qu'affiche Léa quand elle est en pause.
  */
 const TWEET_LEA_START = '@sqli_leo start';
-const TWEET_LEA_STOP = '@sqli_leo stop';
-const TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
 
 /*
  * Constantes des différentes commandes des clusters.
@@ -128,21 +106,21 @@ if (cluster.isWorker) {
   }
 }
 
-
 /**
  * Cas pour le cluster master. Il s'agit du chef d'orchestre.
  * Il crée et met en relation ses deux clusters esclaves.
  */
+
 if (cluster.isMaster) {
 
     // Salutations de Léa
-    playSound("ouverture");
+    Sound.playSound("ouverture");
     
     // Mise à jour des paliers
-    updateGamification();
+    gamification = Utils.getGamification();
 
     // Mise à jour du nombre de tweet reçu
-    updateRankTweet();
+    rank = Utils.getCurrentRank();
 
     // Fork workers.
     clusterTwitter = cluster.fork({type: processConst.TYPE.CLUSTER_TWITTER});
@@ -160,7 +138,7 @@ if (cluster.isMaster) {
        // console.log("j'ai un tweet à envoyé à l'arduino");
 
           // Gestion de l'arrêt et du redémarrage à distance de Léa
-          startAndStopLea(tweet);
+          Utils.startAndStopLea(tweet, admins, clusterArduino);
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
@@ -170,7 +148,7 @@ if (cluster.isMaster) {
               console.log(freshTweets);
               isTweetDisplayed = true;
               tweetDisplayed = tweet;
-              chooseSound(tweet);
+              //TODO VPD Sound.chooseSound(tweet);
               clusterArduino.send(tweet);
           }
 	}
@@ -189,20 +167,20 @@ if (cluster.isMaster) {
                 }
 
                 // Sauvegarde du rang
-                saveRankTweet(tweet);
+                rank = Utils.saveRankTweet(tweet, admins, rank);
                 // Oon regarde si le tweet est gagnant
-                var gamificationLevel = isTweetWinner();
+                var gamificationLevel = Utils.isTweetWinner(gamification, rank);
                 if (gamificationLevel != null)  {
                     clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
                     tweet.motion  = gamificationLevel.motion;0
                 } else {
-                    tweet.commande  = getRandomCommand();
+                    tweet.commande  = Utils.getRandomCommand();
                 }
                 tweet.rank = rank;
                 if (admins.indexOf(tweet.screenName) != -1) {
                     tweet.rank = "ADMIN";
                 }
-                saveTweet(tweet);
+                Utils.saveTweet(tweet);
                 isTweetDisplayed = false;
                 // On tansforme le tweet récemment affiché en tweet historisé
                 if (tweet.fresh) {
@@ -210,25 +188,16 @@ if (cluster.isMaster) {
                     tweet.command = null;
                     historicTweets.push(tweet);
                 }
-                console.log("Tweet frais avant nettoyage" + freshTweets);
-                console.log(freshTweets);
+                //console.log("Tweet frais avant nettoyage" + freshTweets);
+                //console.log(freshTweets);
                 // Suppression du tweet frais
                 _.remove(freshTweets, function(currentObject) {
-                    /*console.log("currentObject.userName " + currentObject.userName);
-                    console.log("tweet.userName " + tweet.userName);
-                    console.log("currentObject.screenName " + currentObject.screenName);
-                    console.log("tweet.screenName " + tweet.screenName);
-                    console.log("currentObject.text " + currentObject.text);
-                    console.log("tweet.text " + tweet.text);
-                    console.log(currentObject.userName === tweet.userName &&
-                        currentObject.screenName === tweet.screenName &&
-                        currentObject.text === tweet.text);*/
                     return currentObject.userName === tweet.userName &&
                         currentObject.screenName === tweet.screenName &&
                         currentObject.text === tweet.text;
                 });
-                console.log("Tweet frais après nettoyage" + freshTweets);
-                console.log(freshTweets);
+                //console.log("Tweet frais après nettoyage" + freshTweets);
+                //console.log(freshTweets);
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
@@ -240,7 +209,7 @@ if (cluster.isMaster) {
                 var freshTweet = freshTweets[0];
                 if (tweetDisplayed != freshTweet) {
                     console.log(freshTweet.text);
-                    chooseSound(freshTweet);
+                    //TODO VPD Sound.chooseSound(freshTweet);
                     clusterArduino.send(freshTweet);
                 }
             }
@@ -269,139 +238,4 @@ if (cluster.isMaster) {
 		clusterTwitter.send({action: processConst.ACTION.LISTEN_TWEET});
 	}, 1000);
 
-}
-
-/**
- * Mets à jour le nombre de tweet réçu par Léa.
- * Le nombre est stocké sur un fichier présent sur
- * le raspberry.
- */
-function updateRankTweet() {
-    rank  = fs.readFileSync(rankFile, "utf8");
-    console.log("NOMBRE DE TWEET DEJA RECU : "  + rank);
-}
-
-/**
- * Sauvegarde le nombre de tweets reçu par Léa.
- * Le nombre est stocké sur un fichier présent sur
- * le raspberry.
- * @param rank le nombre de tweet reçu
- */
-function saveRankTweet(tweet) {
-    //console.log("Nombre avant sauvegarde : " + rank);
-    //console.log(tweet);
-    if (admins.indexOf(tweet.screenName) == -1 && tweet.fresh) {
-        //console.log("JE SUIS DANS UPDATE RANK");
-        rank =  parseInt(rank) + 1;
-
-        console.log("Sauvegarde du nombre de tweet" + rank);
-        try {
-            fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    //console.log("Nombre après sauvegarde : " + rank);
-}
-
-function saveTweet(tweet) {
-    if (tweet.fresh) {
-        var configFile = fs.readFileSync(tweetsDB);
-        var config = JSON.parse(configFile);
-        if(_.findIndex(config, function(o) { return o == tweet; }) > -1) {
-            console.log("le tweet est déjà présent dans la sauvegarde");
-        } else {
-            console.log("le tweet est absent de la sauvegarde");
-        }
-        config.push(tweet);
-        var configJSON = JSON.stringify(config);
-        console.log("Sauvegarde du tweet courant");
-        fs.writeFileSync(tweetsDB, configJSON);
-    }
-}
-
-
-/**
- * Permets de démarrer ou de stopper Léa par l'envoi d'un
- * simple tweet. L'expéditeur doit faire parti des admins
- * et doit respecter un formalisme de texte.
- *
- * @param tweet le tweet reçu
- */
-function startAndStopLea(tweet) {
-
-    if (admins.indexOf(tweet.screenName) != -1) {
-        //console.log("Je suis un ADMIN");
-        if (tweet.text.startsWith(TWEET_LEA_STOP)) {
-            //console.log('Je suis passé dans le Léa stop');
-            isLeaSpeaking = false;
-            var stopTweet = new Tweet('', '', TEXT_LEA_PAUSE);
-            clusterArduino.send(stopTweet);
-        } else  if (tweet.text.startsWith(TWEET_LEA_START)) {
-           // console.log('Je suis passé dans le Léa start');
-            isLeaSpeaking = true;
-        }
-    }
-}
-
-/**
- * Indique si le tweet courant est gagnant en atteignant un palier
- * particulier. Ces paliers sont dynamiques et sont rechargé à chaque
- * lecture de tweet.
- *
- * @returns {boolean} true si le tweet est gagnant, false sinon
- */
-function isTweetWinner() {
-    var result = null;
-    for (var prop in gamification) {
-        if (rank == gamification[prop].rank) {
-            console.log(prop + " atteint");
-            result = gamification[prop];
-        }
-    }
-    return result
-}
-
-/**
- * Mets à jour les paliers gagnants.
- */
-function updateGamification() {
-    gamification  = JSON.parse(fs.readFileSync(gamificationFile, "utf8"));
-}
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomCommand() {
-    //var randomNumber = getRandomInt(0,9);
-    if (getRandomInt(0,9)%2 == 0) {
-        return classicCommands[0];
-    } else {
-        return classicCommands[1];
-    }
-}
-
-function chooseSound(tweet) {
-    if (tweet.text.startsWith("cri") || tweet.text.startsWith("@sqli_leo cri")) {
-        playSound("gemissement");
-    } else if (tweet.text.startsWith("rigole") || tweet.text.startsWith("@sqli_leo rigole")) {
-        playSound("sos");
-    } else if (tweet.text.startsWith("gangster") || tweet.text.startsWith("@sqli_leo gangster")) {
-        playSound("affranchis");
-    } else if (tweet.text.startsWith("colle") || tweet.text.startsWith("@sqli_leo colle")) {
-        playSound("colle");
-    } else if (tweet.text.startsWith("diable") || tweet.text.startsWith("@sqli_leo diable")) {
-        playSound("diable");
-    } else {
-        playSound("foo");
-    }
-}
-
-function playSound(file) {
-    fs.createReadStream('sounds/' + file + '.mp3')
-        .pipe(new lame.Decoder())
-        .on('format', function (format) {
-            this.pipe(new Speaker(format));
-        });
 }
