@@ -32,9 +32,9 @@ function Arduino () {
  */
 Arduino.messageHandler = function(msg) {
 	// Envoi du tweet par le port série avec serialPort
-	console.log("Je suis dans writeDataOnSerial");
+	//console.log("Je suis dans writeDataOnSerial");
 	if(arduinoPort == '' || arduinoPort == undefined) {
-		console.log("Détermination du port de communication de l'Arduino");
+		//console.log("Détermination du port de communication de l'Arduino");
 		getCurrentPort(msg);
 	} else {
 		writeDataOnArduinoSerial(msg);
@@ -46,15 +46,15 @@ Arduino.messageHandler = function(msg) {
  * @param msg
  */
 function getCurrentPort(msg) {
-	console.log("Je suis dans getCurrentPort");
+	//console.log("Je suis dans getCurrentPort");
 	SerialPort.list(function(err, result) {
-		console.log("Je suis dans list");
+		//console.log("Je suis dans list");
 		result.filter(function(val) {
 			if (val.manufacturer == "Arduino_LLC") {
 				arduinoPortName = val.comName;
 				arduinoPort = new SerialPort(arduinoPortName);
 				arduinoPort.on('open', function() {
-					console.log("Le port de l'Arduino est ouvert !!!");
+					//console.log("Le port de l'Arduino est ouvert !!!");
 					writeDataOnArduinoSerial(msg);
 				});
 				// open errors will be emitted as an error event
@@ -72,7 +72,7 @@ function getCurrentPort(msg) {
  * @param msg
  */
 function writeDataOnArduinoSerial(msg) {
-	console.log("J'écris le tweet sur l'arduino");
+	//console.log("J'écris le tweet sur l'arduino");
 	arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
 		if (err) {
 			return console.log('Error on write: ', err.message);

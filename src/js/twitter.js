@@ -35,11 +35,10 @@ Twitter.streamTwitter = function() {
 	var stream = client.stream('statuses/filter', {track: 'sqli_leo'});
 
 	stream.on('data', function(tweetReceived) {
-		console.log(tweetReceived);
 		if (!tweetReceived.retweeted_status) {
-			console.log("Réception du tweet de " + tweetReceived.user.name);
+			//console.log("Réception du tweet de " + tweetReceived.user.name);
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
-			console.log("Message du tweet : " + tweet.text);
+			//console.log("Message du tweet : " + tweet.text);
 			Twitter.process.send({action: processConst.ACTION.SHOW_TWEET, tweet: tweet});
 		}
 	});
@@ -55,11 +54,11 @@ Twitter.streamTwitter = function() {
  * @param msg message contenant le type d'action à effectuer
  */
 Twitter.messageHandler = function(msg) {
-	console.log("\nDéclenchement de la partie Twitter !!!");
+	//console.log("\nDéclenchement de la partie Twitter !!!");
 	if (msg.action == processConst.ACTION.LISTEN_TWEET) {
 		Twitter.streamTwitter();
 	} else if (msg.action == processConst.ACTION.SEND_TWEET) {
-		console.log("Un tweet gagnant");
+		//console.log("Un tweet gagnant");
 		Twitter.sendTweet(msg.winner, msg.rank);
 	}
 };
@@ -67,13 +66,11 @@ Twitter.messageHandler = function(msg) {
 
 
 Twitter.sendTweet = function(winner, rank) {
-	console.log("envoi du tweet gagnant");
+	//console.log("envoi du tweet gagnant");
 
 	client.post('statuses/update', {status: '@' + winner + ' a tweeté le ' + rank + ' tweet pour Léa'},  function(error, tweet, response) {
-		//if(error) throw error;
-		console.log("Un gagnant a été tweeté");
-        //console.log(tweet);  // Tweet body.
-		//console.log(response);  // Raw response object.
+		if(error) throw error;
+		//console.log("Un gagnant a été tweeté");
 	});
 };
 

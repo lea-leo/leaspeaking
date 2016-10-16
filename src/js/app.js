@@ -84,7 +84,6 @@ const TWEET_LEA_START = '@sqli_leo start';
 const TWEET_LEA_STOP = '@sqli_leo stop';
 const TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
 
-
 /*
  * Constantes des différentes commandes des clusters.
  */
@@ -164,39 +163,10 @@ if (cluster.isMaster) {
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
-              console.log("JE SUIS DANS UPDATE RANK " + rank);
-              if (admins.indexOf(tweet.screenName) == -1) {
-                  console.log("JE SUIS DANS UPDATE RANK");
-                  rank =  parseInt(rank) + 1;
-              }
-              var gamificationLevel = isTweetWinner();
-              if (gamificationLevel != null)  {
-                  clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
-                  tweet.motion  = gamificationLevel.motion;
-              } else {
-                  tweet.commande  = getRandomCommand();
-              }
-              if (admins.indexOf(tweet.screenName) == -1) {
-                  console.log("Le numéro de tweet est " + rank);
-                  tweet.rank = rank;
-              } else {
-                  console.log("Le numéro de tweet est admin");
-                  tweet.rank = "ADMIN";
-              }
-
-
+              console.log("Ajout d'un tweet frais...");
               freshTweets.push(tweet);
-              console.log("**********************************************");
-              console.log("**     Récupération d'un tweet récent       **");
-              console.log("**********************************************");
               isTweetDisplayed = true;
-              // Gestion du son pour Léa
-              if (gamificationLevel != null) {
-                playSound("winner");
-                gamificationLevel = null;
-              } else {
-                chooseSound(tweet);
-              }
+              chooseSound(tweet);
               clusterArduino.send(tweet);
           }
 	}
@@ -208,7 +178,26 @@ if (cluster.isMaster) {
 		var tweet = msg.tweet;
         if (isLeaSpeaking) {
             if (msg.action == processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
-                saveRankTweet(rank);
+                if (tweet.fresh) {
+                    console.log("Fin Affichage tweet frais...");
+                } else {
+                    console.log("Fin Affichage tweet historique...");
+                }
+
+                // Sauvegarde du rang
+                saveRankTweet(tweet);
+                // Oon regarde si le tweet est gagnant
+                var gamificationLevel = isTweetWinner();
+                if (gamificationLevel != null)  {
+                    clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
+                    tweet.motion  = gamificationLevel.motion;
+                } else {
+                    tweet.commande  = getRandomCommand();
+                }
+                tweet.rank = rank;
+                if (admins.indexOf(tweet.screenName) != -1) {
+                    tweet.rank = "ADMIN";
+                }
                 saveTweet(tweet);
                 isTweetDisplayed = false;
                 // On tansforme le tweet récemment affiché en tweet historisé
@@ -217,23 +206,37 @@ if (cluster.isMaster) {
                     tweet.command = null;
                     historicTweets.push(tweet);
                 }
+                //console.log("Tweet frais avant nettoyage" + freshTweets);
+                //console.log(freshTweets);
+                // Suppression du tweet frais
                 _.remove(freshTweets, function(currentObject) {
+                    /*console.log("currentObject.userName " + currentObject.userName);
+                    console.log("tweet.userName " + tweet.userName);
+                    console.log("currentObject.screenName " + currentObject.screenName);
+                    console.log("tweet.screenName " + tweet.screenName);
+                    console.log("currentObject.text " + currentObject.text);
+                    console.log("tweet.text " + tweet.text);
+                    console.log(currentObject.userName === tweet.userName &&
+                        currentObject.screenName === tweet.screenName &&
+                        currentObject.text === tweet.text);*/
                     return currentObject.userName === tweet.userName &&
                         currentObject.screenName === tweet.screenName &&
                         currentObject.text === tweet.text;
                 });
+                //console.log("Tweet frais après nettoyage" + freshTweets);
+                //console.log(freshTweets);
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
             if (freshTweets.length > 0) {
-                console.log("**********************************************");
-                console.log("**       Affichage d'un tweet nouveau !     **");
-                console.log("**********************************************");
+                //console.log("**********************************************");
+                //console.log("**       Affichage d'un tweet nouveau !     **");
+                //console.log("**********************************************");
                 isTweetDisplayed = true;
                 var freshTweet = freshTweets[0];
-                //console.log(freshTweet);
+                console.log(freshTweet.text);
+                chooseSound(freshTweet);
                 clusterArduino.send(freshTweet);
-                freshTweets.splice(0, 1);
             }
 
             // Si la liste des tweets historique est plus grande, le progamme la tronque
@@ -243,10 +246,10 @@ if (cluster.isMaster) {
 
             // Si il existe des tweets historique, le programme les affiche de manière aléatoire
             if (historicTweets.length > 0) {
-                console.log("Affichage d'un tweet historique !");
+                //console.log("Affichage d'un tweet historique !");
                 isTweetDisplayed = true;
-                console.log(historicTweets);
                 var historicTweet = historicTweets[Math.floor(Math.random() * historicTweets.length)];
+                console.log("Fraicheur du tweet historique : " + historicTweet.fresh);
                 clusterArduino.send(historicTweet);
             }
         }
@@ -277,23 +280,37 @@ function updateRankTweet() {
  * le raspberry.
  * @param rank le nombre de tweet reçu
  */
-function saveRankTweet(rank) {
-    console.log("Sauvegarde du nombre de tweet" + rank);
-    try {
-        fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
-    } catch (err) {
-        console.log(err);
-    }
+function saveRankTweet(tweet) {
+    //console.log("Nombre avant sauvegarde : " + rank);
+    //console.log(tweet);
+    if (admins.indexOf(tweet.screenName) == -1 && tweet.fresh) {
+        //console.log("JE SUIS DANS UPDATE RANK");
+        rank =  parseInt(rank) + 1;
 
+        console.log("Sauvegarde du nombre de tweet" + rank);
+        try {
+            fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    //console.log("Nombre après sauvegarde : " + rank);
 }
 
 function saveTweet(tweet) {
-    console.log("Sauvegarde du tweet courant");
-    var configFile = fs.readFileSync(tweetsDB);
-    var config = JSON.parse(configFile);
-    config.push(tweet);
-    var configJSON = JSON.stringify(config);
-    fs.writeFileSync(tweetsDB, configJSON);
+    if (tweet.fresh) {
+        var configFile = fs.readFileSync(tweetsDB);
+        var config = JSON.parse(configFile);
+        if(_.findIndex(config, function(o) { return o == tweet; }) > -1) {
+            console.log("le tweet est déjà présent dans la sauvegarde");
+        } else {
+            console.log("le tweet est absent de la sauvegarde");
+        }
+        config.push(tweet);
+        var configJSON = JSON.stringify(config);
+        console.log("Sauvegarde du tweet courant");
+        fs.writeFileSync(tweetsDB, configJSON);
+    }
 }
 
 
@@ -307,14 +324,14 @@ function saveTweet(tweet) {
 function startAndStopLea(tweet) {
 
     if (admins.indexOf(tweet.screenName) != -1) {
-        console.log("Je suis un ADMIN");
+        //console.log("Je suis un ADMIN");
         if (tweet.text.startsWith(TWEET_LEA_STOP)) {
-            console.log('Je suis passé dans le Léa stop');
+            //console.log('Je suis passé dans le Léa stop');
             isLeaSpeaking = false;
             var stopTweet = new Tweet('', '', TEXT_LEA_PAUSE);
             clusterArduino.send(stopTweet);
         } else  if (tweet.text.startsWith(TWEET_LEA_START)) {
-            console.log('Je suis passé dans le Léa start');
+           // console.log('Je suis passé dans le Léa start');
             isLeaSpeaking = true;
         }
     }
@@ -342,12 +359,7 @@ function isTweetWinner() {
  * Mets à jour les paliers gagnants.
  */
 function updateGamification() {
-    //console.log("PALIER LEA AVANT : "  + JSON.stringify(gamification, null, 2));
     gamification  = JSON.parse(fs.readFileSync(gamificationFile, "utf8"));
-    //console.log("PALIER LEA APRES : "  + JSON.stringify(gamification, null, 2));
-    //console.log(gamification["PALIER_2"].RANK);
-    //console.log(gamification["PALIER_2"].COMMAND);
-    console.log(getRandomCommand());
 }
 
 function getRandomInt(min, max) {
