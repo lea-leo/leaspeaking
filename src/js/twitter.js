@@ -3,15 +3,6 @@ import Tweet from "./models/tweet";
 
 var client;
 
-var processConst = {
-	ACTION: {
-		SHOW_TWEET: 'SHOW_TWEET',
-		SEND_TWEET: 'SEND_TWEET',
-		LISTEN_TWEET: 'LISTEN_TWEET',
-		END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
-	}
-};
-
 /**
  * Consdtructeur.
  * @constructor
@@ -39,7 +30,7 @@ Twitter.streamTwitter = function() {
 			//console.log("Réception du tweet de " + tweetReceived.user.name);
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
 			//console.log("Message du tweet : " + tweet.text);
-			Twitter.process.send({action: processConst.ACTION.SHOW_TWEET, tweet: tweet});
+			Twitter.process.send({action: Utils.processConst.ACTION.SHOW_TWEET, tweet: tweet});
 		}
 	});
 
@@ -55,9 +46,9 @@ Twitter.streamTwitter = function() {
  */
 Twitter.messageHandler = function(msg) {
 	//console.log("\nDéclenchement de la partie Twitter !!!");
-	if (msg.action == processConst.ACTION.LISTEN_TWEET) {
+	if (msg.action == Utils.processConst.ACTION.LISTEN_TWEET) {
 		Twitter.streamTwitter();
-	} else if (msg.action == processConst.ACTION.SEND_TWEET) {
+	} else if (msg.action == Utils.processConst.ACTION.SEND_TWEET) {
 		//console.log("Un tweet gagnant");
 		Twitter.sendTweet(msg.winner, msg.rank);
 	}
