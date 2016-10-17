@@ -158,6 +158,10 @@ export default class Utils {
 };
 
 Utils.processConst = {
+  TYPE: {
+      CLUSTER_TWITTER: 'CLUSTER_TWITTER',
+      CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
+  },
 	ACTION: {
 		SHOW_TWEET: 'SHOW_TWEET',
 		SEND_TWEET: 'SEND_TWEET',

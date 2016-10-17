@@ -64,22 +64,6 @@ var gamification;
 const TWEET_LEA_START = '@sqli_leo start';
 
 /*
- * Constantes des différentes commandes des clusters.
- */
-var processConst = {
-    TYPE: {
-        CLUSTER_TWITTER: 'CLUSTER_TWITTER',
-        CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
-    },
-    ACTION: {
-        SHOW_TWEET: 'SHOW_TWEET',
-        SEND_TWEET: 'SEND_TWEET',
-        LISTEN_TWEET: 'LISTEN_TWEET',
-        END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
-    }
-};
-
-/*
  * Compte twitter des admin de Léa
  */
 var admins = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre"];
@@ -95,11 +79,11 @@ if (cluster.isWorker) {
 
   console.log('Worker ' + process.pid + ' has started.');
 
-  if (process.env['type'] == processConst.TYPE.CLUSTER_TWITTER) {
+  if (process.env['type'] == Utils.processConst.TYPE.CLUSTER_TWITTER) {
     console.log('Je fixe le process pour twitter');
     Twitter.process = process;
     process.on('message', Twitter.messageHandler);
-  } else if (process.env['type'] == processConst.TYPE.CLUSTER_ARDUINO) {
+  } else if (process.env['type'] == Utils.processConst.TYPE.CLUSTER_ARDUINO) {
     console.log('Je fixe le process pour arduino');
     Arduino.process = process;
     process.on('message', Arduino.messageHandler);
@@ -115,7 +99,7 @@ if (cluster.isMaster) {
 
     // Salutations de Léa
     Sound.playSound("ouverture");
-    
+
     // Mise à jour des paliers
     gamification = Utils.getGamification();
 
@@ -123,10 +107,10 @@ if (cluster.isMaster) {
     rank = Utils.getCurrentRank();
 
     // Fork workers.
-    clusterTwitter = cluster.fork({type: processConst.TYPE.CLUSTER_TWITTER});
-  
+    clusterTwitter = cluster.fork({type: Utils.processConst.TYPE.CLUSTER_TWITTER});
+
     // Fork workers.
-    clusterArduino = cluster.fork({type: processConst.TYPE.CLUSTER_ARDUINO});
+    clusterArduino = cluster.fork({type: Utils.processConst.TYPE.CLUSTER_ARDUINO});
 
     // Ajout du handler message pour le cluster Twitter
     clusterTwitter.on('message', function(msg) {
@@ -134,7 +118,7 @@ if (cluster.isMaster) {
       // TODO Code Wil clusterTwitter.onMessage(msg);
       var tweet = msg.tweet;
 
-      if (msg.action == processConst.ACTION.SHOW_TWEET) {
+      if (msg.action == Utils.processConst.ACTION.SHOW_TWEET) {
        // console.log("j'ai un tweet à envoyé à l'arduino");
 
           // Gestion de l'arrêt et du redémarrage à distance de Léa
@@ -151,7 +135,7 @@ if (cluster.isMaster) {
               //TODO VPD Sound.chooseSound(tweet);
               clusterArduino.send(tweet);
           }
-	}
+	    }
 
 	});
 
@@ -159,7 +143,7 @@ if (cluster.isMaster) {
 	clusterArduino.on('message', function(msg) {
 		var tweet = msg.tweet;
         if (isLeaSpeaking) {
-            if (msg.action == processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
+            if (msg.action == Utils.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
                 if (tweet.fresh) {
                     console.log("Fin Affichage tweet frais...");
                 } else {
@@ -171,7 +155,7 @@ if (cluster.isMaster) {
                 // Oon regarde si le tweet est gagnant
                 var gamificationLevel = Utils.isTweetWinner(gamification, rank);
                 if (gamificationLevel != null)  {
-                    clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
+                    clusterTwitter.send({action: Utils.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
                     tweet.motion  = gamificationLevel.motion;0
                 } else {
                     tweet.commande  = Utils.getRandomCommand();
@@ -235,7 +219,7 @@ if (cluster.isMaster) {
 	// avant de lancer l'API streaming Twitter
 	setTimeout(function() {
 		console.log("Branchement de l'API Streaming Twitter !!!\n");
-		clusterTwitter.send({action: processConst.ACTION.LISTEN_TWEET});
+		clusterTwitter.send({action: Utils.processConst.ACTION.LISTEN_TWEET});
 	}, 1000);
 
 }
