@@ -155,4 +155,13 @@ export default class Utils {
         }
         return isLeaSpeaking;
     }
-}
+};
+
+Utils.processConst = {
+	ACTION: {
+		SHOW_TWEET: 'SHOW_TWEET',
+		SEND_TWEET: 'SEND_TWEET',
+		LISTEN_TWEET: 'LISTEN_TWEET',
+		END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
+	}
+};
