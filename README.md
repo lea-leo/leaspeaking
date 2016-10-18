@@ -18,3 +18,10 @@ RAF :
   * Détecter automatiquement le port de connexion (à faire en JS ou python)
 
 La communication Arduino->Rpi a été testé avec succès. Donc pas de souci pour avoir un feedback de l'affichage du tweet.
+
+Pour installer la paartie speaker sur Ubuntu il faut ajouter
+sudo apt-get install libasound2-dev
+
+Pour installer la paartie speaker sur Windows il faut ajouter
+npm install --global --production windows-build-tools
+avoir Python => voir https://github.com/nodejs/node-gyp
