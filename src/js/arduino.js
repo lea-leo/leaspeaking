@@ -65,12 +65,20 @@ function getCurrentPort(msg) {
  * Serialport. un setTimeout permet de fixer la durée de l'affichage à 10s par tweet.
  * @param msg
  */
-function writeDataOnArduinoSerial(msg) {
-	//console.log("J'écris le tweet sur l'arduino");
-	arduinoPort.write("{ 'motion': '" + msg.motion + "', tweet:'" + msg.LCDText + "', 'rank':'" + msg.rank + "'}", function(err) {
-		if (msg.fresh) {
-			Sound.chooseSound(msg);
+function writeDataOnArduinoSerial(tweet) {
+	arduinoPort.write("{ 'motion': '" + tweet.motion + "', tweet:'" + tweet.LCDText + "', 'rank':'" + tweet.rank + "'}", function(err) {
+		if (tweet.fresh) {
+			setTimeout(function() {
+				if (tweet.winner) {
+					Sound.playSound("lot3");
+				} else {
+					Sound.chooseSound(tweet);
+				}
+				console.log("Attente de 2,5 s - " + process.pid);
+			}, 2500);
 		}
+
+
 		if (err) {
 			return console.log('Error on write: ', err.message);
 		}

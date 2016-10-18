@@ -1,4 +1,3 @@
-
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
@@ -8,7 +7,7 @@ LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars
 void setup()
 {
   Serial.begin(9600);
-  lcd.init(); // initialize the lcd
+  lcd.begin(); // initialize the lcd
   lcd.backlight();
   //lcd.print("Tweetez moi sur @devfest_lea");
   lcd.setCursor (0,0);  
@@ -28,7 +27,7 @@ void loop()
 {
   if (Serial.available())  {
     delay(1000);
-    lcd.init();
+    lcd.begin();
     lcd.setCursor(0,0);
     
     //lcd.print(Serial.readString());

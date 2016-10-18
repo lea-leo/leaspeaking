@@ -9,6 +9,7 @@ export default class Tweet {
         this.rank = 1;
         this.motion = 1;
         this.timestamp = Date.now();
+		this.winner = false;
   	}
 
 	getTweet() {

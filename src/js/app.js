@@ -99,7 +99,7 @@ if (cluster.isMaster) {
 
     // Salutations de Léa
     Sound.playSound("ouverture");
-
+    
     // Mise à jour des paliers
     gamification = Utils.getGamification();
 
@@ -126,16 +126,33 @@ if (cluster.isMaster) {
 
           // Configuration et stockage d'un tweet récemment reçu
           if (isLeaSpeaking && !tweet.text.startsWith(TWEET_LEA_START)) {
-              //console.log("Ajout d'un tweet frais...");
+              // Sauvegarde du rang
+              rank = Utils.saveRankTweet(tweet, admins, rank);
+              tweet.rank = rank;
+              if (admins.indexOf(tweet.screenName) != -1) {
+                  tweet.rank = "ADMIN";
+              }
+
+              // On regarde si le tweet est gagnant
+              var gamificationLevel = Utils.isTweetWinner(gamification, rank);
+              if (gamificationLevel != null && tweet.fresh)  {
+                  clusterTwitter.send({action: processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
+                  tweet.motion  = gamificationLevel.motion;
+                  tweet.winner = true;
+                  gamificationLevel = null;
+              } else {
+                  tweet.motion  = Utils.getRandomCommand();
+              }
+
               freshTweets.push(tweet);
-              console.log("freshTweets");
-              console.log(freshTweets);
-              isTweetDisplayed = true;
-              tweetDisplayed = tweet;
-              //TODO VPD Sound.chooseSound(tweet);
-              clusterArduino.send(tweet);
+              if (!isTweetDisplayed) {
+                  tweetDisplayed = tweet;
+                  clusterArduino.send(tweet);
+              }
+
+
           }
-	    }
+	}
 
 	});
 
@@ -144,26 +161,6 @@ if (cluster.isMaster) {
 		var tweet = msg.tweet;
         if (isLeaSpeaking) {
             if (msg.action == Utils.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
-                if (tweet.fresh) {
-                    console.log("Fin Affichage tweet frais...");
-                } else {
-                    console.log("Fin Affichage tweet historique...");
-                }
-
-                // Sauvegarde du rang
-                rank = Utils.saveRankTweet(tweet, admins, rank);
-                // Oon regarde si le tweet est gagnant
-                var gamificationLevel = Utils.isTweetWinner(gamification, rank);
-                if (gamificationLevel != null)  {
-                    clusterTwitter.send({action: Utils.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: rank});
-                    tweet.motion  = gamificationLevel.motion;0
-                } else {
-                    tweet.commande  = Utils.getRandomCommand();
-                }
-                tweet.rank = rank;
-                if (admins.indexOf(tweet.screenName) != -1) {
-                    tweet.rank = "ADMIN";
-                }
                 Utils.saveTweet(tweet);
                 isTweetDisplayed = false;
                 // On tansforme le tweet récemment affiché en tweet historisé
@@ -172,28 +169,19 @@ if (cluster.isMaster) {
                     tweet.command = null;
                     historicTweets.push(tweet);
                 }
-                //console.log("Tweet frais avant nettoyage" + freshTweets);
-                //console.log(freshTweets);
                 // Suppression du tweet frais
                 _.remove(freshTweets, function(currentObject) {
                     return currentObject.userName === tweet.userName &&
                         currentObject.screenName === tweet.screenName &&
                         currentObject.text === tweet.text;
                 });
-                //console.log("Tweet frais après nettoyage" + freshTweets);
-                //console.log(freshTweets);
             }
 
             // Si des tweets plus récent sont apparu, on les affiche
             if (freshTweets.length > 0) {
-                //console.log("**********************************************");
-                //console.log("**       Affichage d'un tweet nouveau !     **");
-                //console.log("**********************************************");
                 isTweetDisplayed = true;
                 var freshTweet = freshTweets[0];
                 if (tweetDisplayed != freshTweet) {
-                    console.log(freshTweet.text);
-                    //TODO VPD Sound.chooseSound(freshTweet);
                     clusterArduino.send(freshTweet);
                 }
             }

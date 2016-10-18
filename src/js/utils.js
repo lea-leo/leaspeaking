@@ -10,7 +10,7 @@ import Tweet from "./models/tweet";
 /*
  * Listes des commandes d'action pour Léa
  */
-var classicCommands = ["AMELIE_POULAIN", "TWIN_PEAKS"];
+var classicMotions = ["AMELIE_POULAIN", "TWIN_PEAKS"];
 
 /*
  * Fichier contenant le nombre de tweets reçu
@@ -53,11 +53,11 @@ export default class Utils {
      * Renvoie une commande aléatoire.
      * @returns {*} une commande aléatoire
      */
-    static getRandomCommand() {
+    static getRandomMotion() {
         if (Utils.getRandomInt(0,9)%2 == 0) {
-            return classicCommands[0];
+            return classicMotions[0];
         } else {
-            return classicCommands[1];
+            return classicMotions[1];
         }
     }
 

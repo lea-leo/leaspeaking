@@ -6,7 +6,7 @@ var Speaker = require('speaker');
 
 export default class Sound {
 
-    var easterEggs = {
+    /*var easterEggs = {
         current: {
             CLUSTER_TWITTER: 'CLUSTER_TWITTER',
             CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
@@ -17,7 +17,7 @@ export default class Sound {
             LISTEN_TWEET: 'LISTEN_TWEET',
             END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
         }
-    };
+    };*/
 
     static chooseSound(tweet) {
         if (tweet.text.startsWith("cri") || tweet.text.startsWith("@sqli_leo cri")) {

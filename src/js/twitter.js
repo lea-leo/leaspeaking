@@ -1,10 +1,11 @@
 var Twitter = require("twitter");
+import Utils from "./utils";
 import Tweet from "./models/tweet";
 
 var client;
 
 /**
- * Consdtructeur.
+ * Constructeur.
  * @constructor
  */
 function Twitter () {
@@ -27,9 +28,7 @@ Twitter.streamTwitter = function() {
 
 	stream.on('data', function(tweetReceived) {
 		if (!tweetReceived.retweeted_status) {
-			//console.log("Réception du tweet de " + tweetReceived.user.name);
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
-			//console.log("Message du tweet : " + tweet.text);
 			Twitter.process.send({action: Utils.processConst.ACTION.SHOW_TWEET, tweet: tweet});
 		}
 	});
@@ -45,11 +44,9 @@ Twitter.streamTwitter = function() {
  * @param msg message contenant le type d'action à effectuer
  */
 Twitter.messageHandler = function(msg) {
-	//console.log("\nDéclenchement de la partie Twitter !!!");
 	if (msg.action == Utils.processConst.ACTION.LISTEN_TWEET) {
 		Twitter.streamTwitter();
 	} else if (msg.action == Utils.processConst.ACTION.SEND_TWEET) {
-		//console.log("Un tweet gagnant");
 		Twitter.sendTweet(msg.winner, msg.rank);
 	}
 };
@@ -57,11 +54,11 @@ Twitter.messageHandler = function(msg) {
 
 
 Twitter.sendTweet = function(winner, rank) {
-	//console.log("envoi du tweet gagnant");
-
-	client.post('statuses/update', {status: '@' + winner + ' a tweeté le ' + rank + ' tweet pour Léa'},  function(error, tweet, response) {
-		if(error) throw error;
-		//console.log("Un gagnant a été tweeté");
+	client.post('statuses/update', {status: 'Grâce à Lè&, @' + winner + ' a gagné un lot SQLi. Merci de venir le retirer sur le stand SQLi du Devfest.'},  function(error, tweet, response) {
+		if(error) {
+			throw error;
+		}
+		console.log("Un tweet gagnant a été envoyé");
 	});
 };
 
