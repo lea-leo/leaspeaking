@@ -69,8 +69,8 @@ function writeDataOnArduinoSerial(tweet) {
 		}
 
 		if (tweet.fresh) {
+			console.log("Attente de 2,5 s - " + process.pid);
 			setTimeout(function() {
-				console.log("Attente de 2,5 s - " + process.pid);
 				if (tweet.winner) {
 					Sound.playSound("lot3");
 				} else {
