@@ -1,4 +1,5 @@
 var Twitter = require("twitter");
+
 import Utils from "./utils";
 import Tweet from "./models/tweet";
 
@@ -24,7 +25,7 @@ Twitter.streamTwitter = function() {
 		"access_token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
 	});
 
-	var stream = client.stream('statuses/filter', {track: 'sqli_leo'});
+	var stream = client.stream('statuses/filter', {track: '@sqli_leo'});
 
 	stream.on('data', function(tweetReceived) {
 		if (!tweetReceived.retweeted_status) {
@@ -47,14 +48,14 @@ Twitter.messageHandler = function(msg) {
 	if (msg.action == Utils.processConst.ACTION.LISTEN_TWEET) {
 		Twitter.streamTwitter();
 	} else if (msg.action == Utils.processConst.ACTION.SEND_TWEET) {
-		Twitter.sendTweet(msg.winner, msg.rank);
+		Twitter.sendTweet(msg.winner);
 	}
 };
 
 
 
-Twitter.sendTweet = function(winner, rank) {
-	client.post('statuses/update', {status: 'Grâce à Lè&, @' + winner + ' a gagné un lot SQLi. Merci de venir le retirer sur le stand SQLi du Devfest.'},  function(error, tweet, response) {
+Twitter.sendTweet = function(winner) {
+	client.post('statuses/update', {status: 'Grâce à Lèa, @' + winner + ' a gagné un lot SQLi. Merci de venir le retirer sur le stand SQLi du Devfest.'},  function(error, tweet, response) {
 		if(error) {
 			throw error;
 		}

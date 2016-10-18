@@ -33,7 +33,6 @@ var gamificationFile = 'gamification.json';
  */
 const TWEET_LEA_START = '@sqli_leo start';
 const TWEET_LEA_STOP = '@sqli_leo stop';
-const TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
 
 
 export default class Utils {
@@ -157,15 +156,19 @@ export default class Utils {
     }
 };
 
+Utils.TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
+
+
 Utils.processConst = {
-  TYPE: {
-      CLUSTER_TWITTER: 'CLUSTER_TWITTER',
-      CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
-  },
-	ACTION: {
-		SHOW_TWEET: 'SHOW_TWEET',
-		SEND_TWEET: 'SEND_TWEET',
-		LISTEN_TWEET: 'LISTEN_TWEET',
-		END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
-	}
+    TYPE: {
+        CLUSTER_TWITTER: 'CLUSTER_TWITTER',
+        CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
+    },
+    ACTION: {
+        SHOW_TWEET: 'SHOW_TWEET',
+        SEND_TWEET: 'SEND_TWEET',
+        LISTEN_TWEET: 'LISTEN_TWEET',
+        END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
+    }
 };
+
