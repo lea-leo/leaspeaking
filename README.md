@@ -16,7 +16,7 @@ Il s'agit de vos credentials Twitter.
 
 ### Installation
 
-Pour installer la paartie speaker sur Ubuntu il faut ajouter
+Pour installer la partie speaker sur Ubuntu il faut ajouter
 sudo apt-get install libasound2-dev
 
 Pour installer la paartie speaker sur Windows il faut ajouter
