@@ -1,6 +1,6 @@
 var Twitter = require("twitter");
 
-import Utils from "../utils";
+import Utils from "../helpers/utils";
 import Tweet from "../models/tweet";
 import Configuration from "../config/configuration";
 

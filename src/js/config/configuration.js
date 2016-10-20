@@ -8,31 +8,32 @@ export default class Configuration {
 
 
 }
+
 /*
  * Compte twitter des admin de Léa
  */
-//Configuration.admins = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
-Configuration.admins = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
+Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
+//Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre"];
 
 /*
  * Listes des commandes d'action pour Léa
  */
-Configuration.classicMotions = ["AMELIE_POULAIN", "TWIN_PEAKS"];
+Configuration.CLASSIC_MOTIONS = ["AMELIE_POULAIN", "TWIN_PEAKS"];
 
 /*
  * Fichier contenant le nombre de tweets reçu
  */
-Configuration.rankFile = 'rank.txt';
+Configuration.RANK_FILE = 'rank.txt';
 
 /*
  * Contenus de l'ensemble des tweets reçu
  */
-Configuration.tweetsDB = 'tweets.json';
+Configuration.TWEETS_DB = 'tweets.json';
 
 /*
  * Fichier contenant les paliers de la gamification
  */
-Configuration.gamificationFile = 'gamification.json';
+Configuration.GAMIFICATION_FILE = 'gamification.json';
 
 /*
  * Constante représentant les textes des tweets pour arrêter ou démarrer léa

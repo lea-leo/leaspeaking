@@ -30,16 +30,16 @@ avoir Python => voir https://github.com/nodejs/node-gyp
   * Effectue les salutations d'usage au démarrage
   * Détecte le tweet gagnant
   * Ecris au gagnant sur son mur Twitter
-  * Les paliers gagnants sont dynamique
+  * Les paliers gagnants sont dynamiques
   * Joue un son aléatoire pour chaque tweet
   * Remercie le gagnant de façon sonore
-  * EasterEggs OK pour les admins selon certains mots clés
+  * EasterEggs OK pour les ADMINS selon certains mots clés
+  * Détecter automatiquement le port de connexion (à faire en JS ou python)
 
 ## RAF
 
   * gérer le défilement du tweet => Sans objet
   * fixer le temps d'affichage du tweet => Temps fixé par le Rpi
-  * Détecter automatiquement le port de connexion (à faire en JS ou python)
   * Supprimer dans le script arduino tout les caractères non alpha-numérique
 
 

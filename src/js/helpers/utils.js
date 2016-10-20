@@ -5,9 +5,9 @@ var _ = require('lodash/array');
 var fs = require('fs');
 
 // Le modèle Tweet
-import Tweet from "./models/tweet";
+import Tweet from "../models/tweet";
 
-import Configuration from "./config/configuration";
+import Configuration from "../config/configuration";
 
 export default class Utils {
 
@@ -28,9 +28,9 @@ export default class Utils {
      */
     static getRandomMotion() {
         if (Utils.getRandomInt(0,9)%2 == 0) {
-            return Configuration.classicMotions[0];
+            return Configuration.CLASSIC_MOTIONS[0];
         } else {
-            return Configuration.classicMotions[1];
+            return Configuration.CLASSIC_MOTIONS[1];
         }
     }
 
@@ -43,14 +43,7 @@ export default class Utils {
      * le raspberry.
      */
     static getCurrentRank(context) {
-        console.log("Rank dans la méthode " + context.rank);
-        console.log("Totot dans la méthode " + context.toto);
-        var result =  fs.readFileSync(Configuration.rankFile, "utf8");
-        console.log("Le résultat " + result);
-        context.rank = result;
-        context.toto = 9;
-        console.log("Rank en fin de méthode " + context.rank);
-        console.log("Toto en fin de méthode " + context.toto);
+        context.rank =  fs.readFileSync(Configuration.RANK_FILE, "utf8");
     }
 
     /**
@@ -61,7 +54,7 @@ export default class Utils {
      */
     static fillTweetRank(tweet, rank) {
         tweet.rank = rank;
-        if (Configuration.admins.indexOf(tweet.screenName) != -1) {
+        if (Configuration.ADMINS.indexOf(tweet.screenName) != -1) {
             tweet.rank = "ADMIN";
         }
     }
@@ -70,7 +63,7 @@ export default class Utils {
      * Renvoie les paliers gagnants.
      */
     static getGamification() {
-        return JSON.parse(fs.readFileSync(Configuration.gamificationFile, "utf8"));
+        return JSON.parse(fs.readFileSync(Configuration.GAMIFICATION_FILE, "utf8"));
     }
 
     /**
@@ -98,14 +91,14 @@ export default class Utils {
      */
     static saveTweet(tweet) {
         if (tweet.fresh) {
-            var configFile = fs.readFileSync(Configuration.tweetsDB);
+            var configFile = fs.readFileSync(Configuration.TWEETS_DB);
             var config = JSON.parse(configFile);
             if(_.findIndex(config, function(o) { return o == tweet; }) == -1) {
                 config.push(tweet);
             }
             var configJSON = JSON.stringify(config);
             console.log("Sauvegarde du tweet courant");
-            fs.writeFileSync(Configuration.tweetsDB, configJSON);
+            fs.writeFileSync(Configuration.TWEETS_DB, configJSON);
         }
     }
 
@@ -117,13 +110,11 @@ export default class Utils {
      * @param rank le nombre de tweet reçu
      */
     static updateAndSaveRankTweet(tweet, context) {
-        if (Configuration.admins.indexOf(tweet.screenName) == -1 && tweet.fresh) {
-            console.log("Update rank " + context.rank);
+        if (Configuration.ADMINS.indexOf(tweet.screenName) == -1 && tweet.fresh) {
             var result =  parseInt(context.rank) + 1;
-            console.log("Update rank " + result);
             context.rank = result;
             try {
-                fs.writeFileSync(Configuration.rankFile, context.rank, {"encoding": 'utf8'});
+                fs.writeFileSync(Configuration.RANK_FILE, context.rank, {"encoding": 'utf8'});
             } catch (err) {
                 console.log(err);
             }
@@ -133,7 +124,7 @@ export default class Utils {
 
     /**
      * Permets de démarrer ou de stopper Léa par l'envoi d'un
-     * simple tweet. L'expéditeur doit faire parti des admins
+     * simple tweet. L'expéditeur doit faire parti des ADMINS
      * et doit respecter un formalisme de texte.
      *
      * @param tweet le tweet reçu
@@ -141,8 +132,7 @@ export default class Utils {
     static startAndStopLea(tweet, clusterArduino, context) {
         console.log(tweet.isSpecial);
 
-        if (Configuration.admins.indexOf(tweet.screenName) != -1) {
-            console.log("Je suis admin");
+        if (Configuration.ADMINS.indexOf(tweet.screenName) != -1) {
             if (tweet.text.startsWith(Configuration.TWEET_LEA_STOP)) {
                 console.log("tweet de stop");
                 tweet.isSpecial = true;
@@ -153,18 +143,18 @@ export default class Utils {
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = true;
             }
-            console.log("Je suis admin" + tweet.isSpecial);
         }
-        console.log("Je suis admin fin" + tweet.isSpecial);
     }
 
+    /**
+     * Génère et renvoie un tweet indiquant que Léa fait une pause
+     * @returns {Tweet}
+     */
     static generatePauseTweet() {
         var tweet = new Tweet("", "", Configuration.TEXT_LEA_PAUSE);
         tweet.isSpecial = true;
         return tweet;
     }
-
-
 };
 
 

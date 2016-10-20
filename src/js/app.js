@@ -9,8 +9,8 @@
     var Arduino = require("./clusters/arduino");
     var Twitter = require("./clusters/twitter");
 
-    import Sound from "./sound";
-    import Utils from "./utils";
+    import Sound from "./helpers/sound";
+    import Utils from "./helpers/utils";
 
 
     // lodash
@@ -58,11 +58,7 @@
         context.gamification = Utils.getGamification();
 
         // Mise à jour du nombre de tweet reçu
-        console.log("RANK avant appel " + context.rank);
-        console.log("TOTO avant appel " + context.toto);
         Utils.getCurrentRank(context);
-        console.log("TOTO après appel " + context.toto);
-        console.log("RANK après appel " + context.rank);
 
         // Fork workers.
         clusterTwitter = cluster.fork({type: Configuration.processConst.TYPE.CLUSTER_TWITTER});
@@ -76,17 +72,12 @@
 
             if (msg.action == Configuration.processConst.ACTION.SHOW_TWEET) {
               // Gestion de l'arrêt et du redémarrage à distance de Léa
-                console.log("tweet.isSpecial" + tweet.isSpecial);
-                console.log("isLeaSpeaking" + context.isLeaSpeaking);
                 Utils.startAndStopLea(tweet, clusterArduino, context);
-                console.log("tweet.isSpecial" + tweet.isSpecial);
-                console.log("isLeaSpeaking" + context.isLeaSpeaking);
 
               // Configuration et stockage d'un tweet récemment reçu
               if (context.isLeaSpeaking && !tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
                   context.freshTweets.push(tweet);
                   // Sauvegarde du rang
-                  console.log("RANK " + context.rank);
                   Utils.updateAndSaveRankTweet(tweet, context);
                   Utils.fillTweetRank(tweet, context.rank);
 
@@ -104,7 +95,6 @@
                   if (!context.isTweetDisplayed) {
                       context.tweetDisplayed = tweet;
                       context.isTweetDisplayed = true;
-                      console.log("********* ENVOI TWEET 1 *********");
                       clusterArduino.send(tweet);
                   }
               }
@@ -138,7 +128,6 @@
                     var freshTweet = context.freshTweets[0];
                     if (!context.isTweetDisplayed && context.tweetDisplayed != freshTweet && context.isLeaSpeaking) {
                         context.isTweetDisplayed = true;
-                        console.log("********* ENVOI TWEET 2 *********");
                         clusterArduino.send(freshTweet);
                     }
                 }
@@ -153,7 +142,6 @@
                     if (context.historicTweets.length > 0) {
                         var historicTweet = context.historicTweets[Utils.getRandomInt(0, context.historicTweets.length - 1)];
                         context.isTweetDisplayed = true;
-                        console.log("********* ENVOI TWEET 3 *********");
                         clusterArduino.send(historicTweet);
                     }
                 }
@@ -164,7 +152,7 @@
         // Quand le worker arduino est opérationnel, nous affichons le
         // tweet de bienvenue ainsi que l'accompagnement vocal
         clusterArduino.on('online', function(worker) {
-            Sound.playSound("ouverture");
+            Sound.playSound("bienvenue");
             clusterArduino.send(Utils.generatePauseTweet());
         });
 
