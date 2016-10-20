@@ -17,7 +17,14 @@ Il s'agit de vos credentials Twitter.
 ### Installation
 
 Pour installer la partie speaker sur Ubuntu il faut ajouter
+```javascript
 sudo apt-get install libasound2-dev
+```
+Ensuite il suffit d'installer simplement leaspeaking ainsi
+
+```javascript
+npm install leaspeaking
+```
 
 Pour installer la paartie speaker sur Windows il faut ajouter
 npm install --global --production windows-build-tools
