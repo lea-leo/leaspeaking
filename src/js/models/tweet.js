@@ -10,6 +10,7 @@ export default class Tweet {
         this.motion = 1;
         this.timestamp = Date.now();
 		this.winner = false;
+		this.isSpecial = false;
   	}
 
 	getTweet() {

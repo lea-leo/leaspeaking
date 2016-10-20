@@ -7,33 +7,7 @@ var fs = require('fs');
 // Le modèle Tweet
 import Tweet from "./models/tweet";
 
-/*
- * Listes des commandes d'action pour Léa
- */
-var classicMotions = ["AMELIE_POULAIN", "TWIN_PEAKS"];
-
-/*
- * Fichier contenant le nombre de tweets reçu
- */
-var rankFile = 'rank.txt';
-
-/*
- * Contenus de l'ensemble des tweets reçu
- */
-var tweetsDB = 'tweets.json';
-
-/*
- * Fichier contenant les paliers de la gamification
- */
-var gamificationFile = 'gamification.json';
-
-/*
- * Constante représentant les textes des tweets pour arrêter ou démarrer léa
- * Cela représente aussi le texte qu'affiche Léa quand elle est en pause.
- */
-const TWEET_LEA_START = '@sqli_leo start';
-const TWEET_LEA_STOP = '@sqli_leo stop';
-
+import Configuration from "./config/configuration";
 
 export default class Utils {
 
@@ -54,9 +28,9 @@ export default class Utils {
      */
     static getRandomMotion() {
         if (Utils.getRandomInt(0,9)%2 == 0) {
-            return classicMotions[0];
+            return Configuration.classicMotions[0];
         } else {
-            return classicMotions[1];
+            return Configuration.classicMotions[1];
         }
     }
 
@@ -68,15 +42,35 @@ export default class Utils {
      * Le nombre est stocké sur un fichier présent sur
      * le raspberry.
      */
-    static getCurrentRank() {
-        return fs.readFileSync(rankFile, "utf8");
+    static getCurrentRank(context) {
+        console.log("Rank dans la méthode " + context.rank);
+        console.log("Totot dans la méthode " + context.toto);
+        var result =  fs.readFileSync(Configuration.rankFile, "utf8");
+        console.log("Le résultat " + result);
+        context.rank = result;
+        context.toto = 9;
+        console.log("Rank en fin de méthode " + context.rank);
+        console.log("Toto en fin de méthode " + context.toto);
+    }
+
+    /**
+     * Remplis le rang du tweet avec le rang courant, sauf
+     * si on est un admin auquel cas on mets "ADMIN" comme rang
+     * @param tweet
+     * @param rank
+     */
+    static fillTweetRank(tweet, rank) {
+        tweet.rank = rank;
+        if (Configuration.admins.indexOf(tweet.screenName) != -1) {
+            tweet.rank = "ADMIN";
+        }
     }
 
     /**
      * Renvoie les paliers gagnants.
      */
     static getGamification() {
-        return JSON.parse(fs.readFileSync(gamificationFile, "utf8"));
+        return JSON.parse(fs.readFileSync(Configuration.gamificationFile, "utf8"));
     }
 
     /**
@@ -104,14 +98,14 @@ export default class Utils {
      */
     static saveTweet(tweet) {
         if (tweet.fresh) {
-            var configFile = fs.readFileSync(tweetsDB);
+            var configFile = fs.readFileSync(Configuration.tweetsDB);
             var config = JSON.parse(configFile);
             if(_.findIndex(config, function(o) { return o == tweet; }) == -1) {
                 config.push(tweet);
             }
             var configJSON = JSON.stringify(config);
             console.log("Sauvegarde du tweet courant");
-            fs.writeFileSync(tweetsDB, configJSON);
+            fs.writeFileSync(Configuration.tweetsDB, configJSON);
         }
     }
 
@@ -122,16 +116,19 @@ export default class Utils {
      * le raspberry.
      * @param rank le nombre de tweet reçu
      */
-    static saveRankTweet(tweet, admins, rank) {
-        if (admins.indexOf(tweet.screenName) == -1 && tweet.fresh) {
-            rank =  parseInt(rank) + 1;
+    static updateAndSaveRankTweet(tweet, context) {
+        if (Configuration.admins.indexOf(tweet.screenName) == -1 && tweet.fresh) {
+            console.log("Update rank " + context.rank);
+            var result =  parseInt(context.rank) + 1;
+            console.log("Update rank " + result);
+            context.rank = result;
             try {
-                fs.writeFileSync(rankFile, rank, {"encoding": 'utf8'});
+                fs.writeFileSync(Configuration.rankFile, context.rank, {"encoding": 'utf8'});
             } catch (err) {
                 console.log(err);
             }
         }
-        return rank;
+        //return rank;
     }
 
     /**
@@ -141,34 +138,35 @@ export default class Utils {
      *
      * @param tweet le tweet reçu
      */
-    static startAndStopLea(tweet, admins, clusterArduino) {
-        var isLeaSpeaking;
-        if (admins.indexOf(tweet.screenName) != -1) {
-            if (tweet.text.startsWith(TWEET_LEA_STOP)) {
-                isLeaSpeaking = false;
-                var stopTweet = new Tweet('', '', TEXT_LEA_PAUSE);
-                clusterArduino.send(stopTweet);
-            } else  if (tweet.text.startsWith(TWEET_LEA_START)) {
-                isLeaSpeaking = true;
+    static startAndStopLea(tweet, clusterArduino, context) {
+        console.log(tweet.isSpecial);
+
+        if (Configuration.admins.indexOf(tweet.screenName) != -1) {
+            console.log("Je suis admin");
+            if (tweet.text.startsWith(Configuration.TWEET_LEA_STOP)) {
+                console.log("tweet de stop");
+                tweet.isSpecial = true;
+                context.isLeaSpeaking = false;
+                clusterArduino.send(Utils.generatePauseTweet());
+            } else  if (tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
+                console.log("tweet de start");
+                tweet.isSpecial = true;
+                context.isLeaSpeaking = true;
             }
+            console.log("Je suis admin" + tweet.isSpecial);
         }
-        return isLeaSpeaking;
+        console.log("Je suis admin fin" + tweet.isSpecial);
     }
+
+    static generatePauseTweet() {
+        var tweet = new Tweet("", "", Configuration.TEXT_LEA_PAUSE);
+        tweet.isSpecial = true;
+        return tweet;
+    }
+
+
 };
 
-Utils.TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
 
 
-Utils.processConst = {
-    TYPE: {
-        CLUSTER_TWITTER: 'CLUSTER_TWITTER',
-        CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
-    },
-    ACTION: {
-        SHOW_TWEET: 'SHOW_TWEET',
-        SEND_TWEET: 'SEND_TWEET',
-        LISTEN_TWEET: 'LISTEN_TWEET',
-        END_SHOW_TWEET_ON_ARDUINO: 'END_SHOW_TWEET_ON_ARDUINO'
-    }
-};
 

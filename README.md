@@ -40,6 +40,7 @@ avoir Python => voir https://github.com/nodejs/node-gyp
   * gérer le défilement du tweet => Sans objet
   * fixer le temps d'affichage du tweet => Temps fixé par le Rpi
   * Détecter automatiquement le port de connexion (à faire en JS ou python)
+  * Supprimer dans le script arduino tout les caractères non alpha-numérique
 
 
 ## Remarques diverses

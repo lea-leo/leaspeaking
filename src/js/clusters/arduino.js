@@ -1,7 +1,8 @@
 var SerialPort = require('serialport');
 
-import Sound from "./sound";
-import Utils from "./utils";
+import Sound from "../sound";
+import Utils from "../utils";
+import Configuration from "../config/configuration";
 
 
 // Port arduino
@@ -63,30 +64,33 @@ function getCurrentPort(msg) {
  * @param msg
  */
 function writeDataOnArduinoSerial(tweet) {
+	console.log(tweet.LCDText);
 	arduinoPort.write("{ 'motion': '" + tweet.motion + "', tweet:'" + tweet.LCDText + "', 'rank':'" + tweet.rank + "'}", function(err) {
 		if (err) {
 			return console.log('Error on write: ', err.message);
 		}
+		console.log("Tweet special : " + tweet.isSpecial);
+		if (!tweet.isSpecial) {
+			if (tweet.fresh) {
+				console.log("Attente de 2,5 s - " + process.pid);
+				setTimeout(function() {
+					if (tweet.winner) {
+						Sound.playSound("lot3");
+					} else {
+						Sound.chooseSound(tweet);
+					}
+					setTimeout(function() {
+						console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
+						Arduino.process.send({action: Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
+					}, 7500);
+				}, 2500);
 
-		if (tweet.fresh) {
-			console.log("Attente de 2,5 s - " + process.pid);
-			setTimeout(function() {
-				if (tweet.winner) {
-					Sound.playSound("lot3");
-				} else {
-					Sound.chooseSound(tweet);
-				}
+			} else {
 				setTimeout(function() {
 					console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-					Arduino.process.send({action: Utils.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
-				}, 7500);
-			}, 2500);
-
-		} else {
-			setTimeout(function() {
-				console.log("LYNCHMANIAC Le tweet est fini d'afficher par l'arduino !");
-				Arduino.process.send({action: Utils.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
-			}, 10000);
+					Arduino.process.send({action: Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
+				}, 10000);
+			}
 		}
 
 	});

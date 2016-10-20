@@ -1,7 +1,8 @@
 var Twitter = require("twitter");
 
-import Utils from "./utils";
-import Tweet from "./models/tweet";
+import Utils from "../utils";
+import Tweet from "../models/tweet";
+import Configuration from "../config/configuration";
 
 var client;
 
@@ -30,7 +31,7 @@ Twitter.streamTwitter = function() {
 	stream.on('data', function(tweetReceived) {
 		if (!tweetReceived.retweeted_status) {
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
-			Twitter.process.send({action: Utils.processConst.ACTION.SHOW_TWEET, tweet: tweet});
+			Twitter.process.send({action: Configuration.processConst.ACTION.SHOW_TWEET, tweet: tweet});
 		}
 	});
 
@@ -45,9 +46,9 @@ Twitter.streamTwitter = function() {
  * @param msg message contenant le type d'action à effectuer
  */
 Twitter.messageHandler = function(msg) {
-	if (msg.action == Utils.processConst.ACTION.LISTEN_TWEET) {
+	if (msg.action == Configuration.processConst.ACTION.LISTEN_TWEET) {
 		Twitter.streamTwitter();
-	} else if (msg.action == Utils.processConst.ACTION.SEND_TWEET) {
+	} else if (msg.action == Configuration.processConst.ACTION.SEND_TWEET) {
 		Twitter.sendTweet(msg.winner);
 	}
 };
