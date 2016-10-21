@@ -26,19 +26,19 @@ void loop()
     for (pos = 20; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      myservo1.write(pos);
-      myservo2.write(pos);
+      //myservo1.write(pos);
+      //myservo2.write(pos);
       delay(40);                       // waits 15ms for the servo to reach the position
     }
     for (pos = 180; pos >= 20; pos -= 1) { // goes from 180 degrees to 0 degrees
       myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      myservo1.write(pos);
-      myservo2.write(pos);
+      //myservo1.write(pos);
+      //myservo2.write(pos);
       delay(40);                       // waits 15ms for the servo to reach the position
     }
     myservo.write(LOW_POSITION);
-    myservo1.write(LOW_POSITION);
-    myservo2.write(LOW_POSITION);
+    //myservo1.write(LOW_POSITION);
+    //myservo2.write(LOW_POSITION);
     delay(120);
 
     /*for (pos = 180; pos >= 20; pos -= 1) { // goes from 180 degrees to 0 degrees
