@@ -112,7 +112,7 @@
                     // On tansforme le tweet récemment affiché en tweet historisé
                     if (tweet.fresh) {
                         tweet.fresh = false;
-                        tweet.command = null;
+                        tweet.motion = null;
                         context.historicTweets.push(tweet);
                     }
                     // Suppression du tweet frais
