@@ -64,6 +64,7 @@ function getCurrentPort(msg) {
  * @param msg
  */
 function writeDataOnArduinoSerial(tweet) {
+	console.log("écriture du tweet : " + tweet.LCDText);
 	arduinoPort.write("{ 'motion': '" + tweet.motion + "', tweet:'" + tweet.LCDText + "', 'rank':'" + tweet.rank + "'}", function(err) {
 		if (err) {
 			return console.log('Error on write: ', err.message);

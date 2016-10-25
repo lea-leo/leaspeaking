@@ -29,6 +29,7 @@ Twitter.streamTwitter = function() {
 	var stream = client.stream('statuses/filter', {track: '@sqli_leo'});
 
 	stream.on('data', function(tweetReceived) {
+		console.log("tweet reçu");
 		if (!tweetReceived.retweeted_status) {
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
 			Twitter.process.send({action: Configuration.processConst.ACTION.SHOW_TWEET, tweet: tweet});
