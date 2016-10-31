@@ -1,12 +1,21 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
-
+#include <Servo.h>
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+Servo myservo;
+
+int pos = 180;
+int LOW_POSITION =  180;
+int HIGH_POSITION =  0;
 
 void setup()
 {
   Serial.begin(9600);
+  myservo.attach(9);
+  myservo.write(LOW_POSITION);
+  
   lcd.begin(); // initialize the lcd
   lcd.backlight();
   //lcd.print("Tweetez moi sur @devfest_lea");
@@ -97,6 +106,7 @@ void loop()
       lcd.setCursor (0,3);        // go to start of 2nd line
       lcd.print(fourthPart);
    }
+   leaMove();
    //delay(30000);
   }
   // Bug impossible de récupérer la chaîne par l'intermédiaire du python
@@ -106,3 +116,24 @@ void loop()
   //Serial.write("DONE");
 
 }
+
+function leaMove() {
+      for (pos = 20; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+      // in steps of 1 degree
+      myservo.write(pos);              // tell servo to go to position in variable 'pos'
+      //myservo1.write(pos);
+      //myservo2.write(pos);
+      delay(40);                       // waits 15ms for the servo to reach the position
+    }
+    for (pos = 180; pos >= 20; pos -= 1) { // goes from 180 degrees to 0 degrees
+      myservo.write(pos);              // tell servo to go to position in variable 'pos'
+      //myservo1.write(pos);
+      //myservo2.write(pos);
+      delay(40);                       // waits 15ms for the servo to reach the position
+    }
+    myservo.write(LOW_POSITION);
+    //myservo1.write(LOW_POSITION);
+    //myservo2.write(LOW_POSITION);
+    delay(120);
+}
+

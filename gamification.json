@@ -1,11 +1,11 @@
 {
   "level_1":{
-    "rank":20,
+    "rank":55,
     "motion": "FIGHT_CLUB",
     "sound": "sos"
   },
   "level_2":{
-    "rank":40,
+    "rank":59,
     "motion": "FIGHT_CLUB",
     "sound": "colle"
   },
