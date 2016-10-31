@@ -30,6 +30,24 @@ Pour installer la paartie speaker sur Windows il faut ajouter
 npm install --global --production windows-build-tools
 avoir Python => voir https://github.com/nodejs/node-gyp
 
+## Connexion avec l'enceinte bluetooth
+
+Pour configurer une connexion auto du device, il faut ajouter AutoConnect=true au fichier /etc/bluetooth/audio.conf
+Si le fichier existe pas il faut le créer.
+Afin d'assurer la connexion auto il faut que le démon pulseaudio soit opérationnel pour cela, taper :
+```shell
+pulseaudio -k (pour l'arrêter)
+pulseaudio --start (pour le démarrer)
+```
+
+Afin de désigner notre enceinte comme enceinte par défaut
+```
+pacmd set-default-sink bluez_sink.xx_xx_xx_xx_xx_xx (où est l'adresse MAC de l'enceinte, avec des _ au lieu des :)
+pacmd set-default-sink bluez_sink.40_EF_4C_DF_D5_D3 (pour notre cas précis)
+```
+
+A noter qu'il est possible de faire une connexion manuelle avec l'aide de bluetoothctl puis connect <adresseMAC>
+
 ## Fonctionnalités OK
 
   * Reçoit les tweets
@@ -41,7 +59,8 @@ avoir Python => voir https://github.com/nodejs/node-gyp
   * Joue un son aléatoire pour chaque tweet
   * Remercie le gagnant de façon sonore
   * EasterEggs OK pour les ADMINS selon certains mots clés
-  * Détecter automatiquement le port de connexion (à faire en JS ou python)
+  * Détecter automatiquement le port de connexion
+  * Détection automatique de l'enceinte bluetooth
 
 ## RAF
 
@@ -57,4 +76,6 @@ L'écriture sur le port serial se fait à l'aide de python car la librairie npm 
 Avec le Léonardo, il est possible d'utiliser le module serialport.
 
 La communication Arduino->Rpi a été testé avec succès. Donc pas de souci pour avoir un feedback de l'affichage du tweet.
+
+
 
