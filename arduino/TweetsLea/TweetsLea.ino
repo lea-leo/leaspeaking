@@ -80,7 +80,6 @@ void loop()
     lcd.setCursor(0,0);
     
     //lcd.print(Serial.readString());
-    //String message = Serial.readString();
     parseMessage(Serial.readString());
     String message = tweet;
     int charcount = message.length();
