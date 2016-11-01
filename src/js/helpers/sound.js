@@ -17,7 +17,7 @@ export default class Sound {
         if (!result) {
             // On n'a pas trouvé de son "spécial easter egg"
             // Il faut du coup choisir un son au hasard
-            var indice = Utils.getRandomInt(0,Configuration.sounds.length);
+            var indice = Utils.getRandomInt(0,Configuration.sounds.length - 1);
             result = Configuration.sounds[indice].mp3;
         } else {
             result = result.mp3;
