@@ -73,11 +73,7 @@ function writeDataOnArduinoSerial(tweet) {
 			if (tweet.fresh) {
 				console.log("Attente de 2,5 s - " + process.pid);
 				setTimeout(function() {
-					if (tweet.winner) {
-						Sound.playSound("lot3");
-					} else {
-						Sound.chooseSound(tweet);
-					}
+					Sound.playSound(tweet.sound);
 					setTimeout(function() {
 						console.log("LYNCHMANIAC Le tweet frais est fini d'afficher par l'arduino !");
 						Arduino.process.send({action: Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});

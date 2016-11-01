@@ -86,6 +86,7 @@
                   if (gamificationLevel != null && tweet.fresh)  {
                       clusterTwitter.send({action: Configuration.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: context.rank});
                       tweet.motion  = gamificationLevel.motion;
+                      tweet.sound = gamificationLevel.sound;
                       tweet.winner = true;
                       gamificationLevel = null;
                   } else {

@@ -3,6 +3,7 @@ var Twitter = require("twitter");
 import Utils from "../helpers/utils";
 import Tweet from "../models/tweet";
 import Configuration from "../config/configuration";
+import Sound from "../helpers/sound";
 
 var client;
 
@@ -26,11 +27,13 @@ Twitter.streamTwitter = function() {
 		"access_token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
 	});
 
-	var stream = client.stream('statuses/filter', {track: '@sqli_leo'});
+	var stream = client.stream('statuses/filter', {track: '@devfest_lea'});
 
 	stream.on('data', function(tweetReceived) {
 		if (!tweetReceived.retweeted_status) {
 			var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
+			// Il faut choisir le son associé au tweet
+			tweet.sound = Sound.chooseSound(tweet);
 			Twitter.process.send({action: Configuration.processConst.ACTION.SHOW_TWEET, tweet: tweet});
 		}
 	});
