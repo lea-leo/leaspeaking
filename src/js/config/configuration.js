@@ -12,8 +12,8 @@ export default class Configuration {
 /*
  * Compte twitter des admin de Léa
  */
-Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre"];
-//Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre"];
+//Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
+Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
 
 /*
  * Listes des commandes d'action pour Léa
@@ -66,7 +66,7 @@ Configuration.easterEggs = [
     {text: "lot1", alternativeText: "@sqli_leo lot1", mp3: "lot1"},
     {text: "lot2", alternativeText: "@sqli_leo lot2", mp3: "lot2"},
     {text: "lot3", alternativeText: "@sqli_leo lot3", mp3: "lot3"},
-    {text: "perdu1", alternativeText: "@sqli_leo perdu1", mp3: "perdu1"},
+        {text: "perdu1", alternativeText: "@sqli_leo perdu1", mp3: "perdu1"},
     {text: "dora", alternativeText: "@sqli_leo dora", mp3: "c gagné"},
     {text: "felicitations", alternativeText: "@sqli_leo felicitations", mp3: "félicitations"},
     {text: "feu artifice", alternativeText: "@sqli_leo feu artifice", mp3: "feu artifice"},
