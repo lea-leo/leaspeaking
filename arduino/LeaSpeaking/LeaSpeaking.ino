@@ -122,7 +122,7 @@ void loop()
   
       long remainder = 40 - message.length();
       String firstPart = message.substring(0,20);
-      String secondPart = message.substring(20,39);
+      String secondPart = message.substring(20,40);
   
       //firstPart[20] = '\0';
       //secondPart[remainder] = '\0';
@@ -152,7 +152,7 @@ void loop()
       lcd.print(thirdPart);
   
       
-    } else if (charcount > 60 && charcount <= 80) {
+    } else if (charcount > 60) {
       
       //int remainder = 80 - message.length();
       
@@ -160,7 +160,7 @@ void loop()
       String secondPart = message.substring(20,40);
       String thirdPart = message.substring(40,60);
       String fourthPart = message.substring(60,80);
-      //fourthPart = fourthPart + "...";      
+      fourthPart = fourthPart + "...";      
 
       /*firstPart[20] = '\0';
       secondPart[20] = '\0';
