@@ -109,7 +109,11 @@ export default class Tweet {
 	    {'base':'x','letters':/[\u0078\u24E7\uFF58\u1E8B\u1E8D]/g},
 	    {'base':'y','letters':/[\u0079\u24E8\uFF59\u1EF3\u00FD\u0177\u1EF9\u0233\u1E8F\u00FF\u1EF7\u1E99\u1EF5\u01B4\u024F\u1EFF]/g},
 	    {'base':'z','letters':/[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g},
-		{'base':' ','letters':/[\u0027]/g}
+		{'base':' ','letters':/[\u0027]/g},
+		{'base':' ','letters':/[\u00A3]/g}, // £
+		{'base':' ','letters':/[\u00B5]/g}, // µ
+		{'base':' ','letters':/[\u00A1\u00A2\u00A3\u00A4\u00A5\u00A6\u00A7\u00A8\u00A9\u00AA\u00AB\u00AC\u00AD\u00AE\u00AF]/g}, //
+		{'base':' ','letters':/[\u00B1\u00B2\u00B3\u00B4\u00B5\u00B6\u00B7\u00B8\u00B9\u00BA\u00BB\u00BC\u00BD\u00BE\u00BF]/g}
 	  ];
 
 	  for(var i=0; i<defaultDiacriticsRemovalMap.length; i++) {
