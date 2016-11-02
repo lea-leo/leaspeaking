@@ -83,10 +83,10 @@ void setup()
   lcd.begin(); // initialize the lcd
   lcd.backlight();
   //lcd.print("Tweetez moi sur @devfest_lea");
-  lcd.setCursor (0,0);  
-  lcd.print("  Tweetez moi sur");
+  lcd.setCursor (0,1);  
+  lcd.print("   Initialisation");
   lcd.setCursor (0,2);  
-  lcd.print("   @devfest_lea");
+  lcd.print("     ..........");
 }
 
 //const String  message  = "Coucou le Monde";
