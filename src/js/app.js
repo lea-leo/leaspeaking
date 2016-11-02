@@ -9,7 +9,6 @@
     var Arduino = require("./clusters/arduino");
     var Twitter = require("./clusters/twitter");
 
-    import Sound from "./helpers/sound";
     import Utils from "./helpers/utils";
 
 
@@ -74,8 +73,12 @@
               // Gestion de l'arrêt et du redémarrage à distance de Léa
                 Utils.startAndStopLea(tweet, clusterArduino, context);
 
+                console.log("Tweet spécial : " + tweet.isSpecial);
+                console.log("LeaSpeaking : " + context.isLeaSpeaking);
+
               // Configuration et stockage d'un tweet récemment reçu
-              if (context.isLeaSpeaking && !tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
+              if (context.isLeaSpeaking && !tweet.isSpecial) {
+                  console.log("Ajout du nouveau tweet dans la file d'attente...");
                   context.freshTweets.push(tweet);
                   // Sauvegarde du rang
                   Utils.updateAndSaveRankTweet(tweet, context);
@@ -92,8 +95,10 @@
                   } else {
                       tweet.motion  = Utils.getRandomMotion();
                   }
-
+                  console.log("Le tweet à afficher : ");
+                  console.log(tweet);
                   if (!context.isTweetDisplayed) {
+                      console.log("Demande au worker Arduino d'afficher le tweet");
                       context.tweetDisplayed = tweet;
                       context.isTweetDisplayed = true;
                       clusterArduino.send(tweet);
@@ -153,8 +158,8 @@
         // Quand le worker arduino est opérationnel, nous affichons le
         // tweet de bienvenue ainsi que l'accompagnement vocal
         clusterArduino.on('online', function(worker) {
-            Sound.playSound("bienvenue");
-            clusterArduino.send(Utils.generatePauseTweet());
+            //Sound.playSound("bienvenue");
+            //clusterArduino.send(Utils.generatePauseTweet());
         });
 
         // Temps de latence pour permettre l'initialisation des workers

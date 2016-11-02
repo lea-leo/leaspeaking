@@ -8,6 +8,7 @@ var fs = require('fs');
 import Tweet from "../models/tweet";
 
 import Configuration from "../config/configuration";
+import Sound from "./sound";
 
 export default class Utils {
 
@@ -54,7 +55,7 @@ export default class Utils {
      */
     static fillTweetRank(tweet, rank) {
         tweet.rank = rank;
-        if (Configuration.ADMINS.indexOf(tweet.screenName) != -1) {
+        if (Utils.isAdmin(tweet.screenName)) {
             tweet.rank = "ADMIN";
         }
     }
@@ -110,7 +111,7 @@ export default class Utils {
      * @param rank le nombre de tweet reçu
      */
     static updateAndSaveRankTweet(tweet, context) {
-        if (Configuration.ADMINS.indexOf(tweet.screenName) == -1 && tweet.fresh) {
+        if (!Utils.isAdmin(tweet.screenName) && tweet.fresh) {
             var result =  parseInt(context.rank) + 1;
             context.rank = result;
             try {
@@ -122,6 +123,15 @@ export default class Utils {
         //return rank;
     }
 
+    static isAdmin(name) {
+        return Configuration.ADMINS.toLowerCase().indexOf(name.toLowerCase()) != -1;
+    }
+    static isDemoOff(tweet) {
+        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_OFF.toLowerCase()) != -1;
+    }
+    static isDemoOn(tweet) {
+        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_ON.toLowerCase()) != -1;
+    }
     /**
      * Permets de démarrer ou de stopper Léa par l'envoi d'un
      * simple tweet. L'expéditeur doit faire parti des ADMINS
@@ -130,19 +140,20 @@ export default class Utils {
      * @param tweet le tweet reçu
      */
     static startAndStopLea(tweet, clusterArduino, context) {
-        console.log(tweet.isSpecial);
 
-        if (Configuration.ADMINS.indexOf(tweet.screenName) != -1) {
+        if (Utils.isAdmin(tweet.screenName)) {
+            console.log("Je suis un admin");
             if (tweet.text.startsWith(Configuration.TWEET_LEA_STOP)) {
                 console.log("tweet de stop");
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = false;
-                clusterArduino.send(Utils.generatePauseTweet());
             } else  if (tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
                 console.log("tweet de start");
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = true;
+                Sound.playSound("bienvenue");
             }
+            clusterArduino.send(Utils.generatePauseTweet());
         }
     }
 

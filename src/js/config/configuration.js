@@ -12,8 +12,9 @@ export default class Configuration {
 /*
  * Compte twitter des admin de Léa
  */
+Configuration.ADMINS = ["thedireizh", "devfest_lea", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
 //Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
-Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
+//Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
 
 /*
  * Listes des commandes d'action pour Léa
@@ -39,10 +40,12 @@ Configuration.GAMIFICATION_FILE = 'gamification.json';
  * Constante représentant les textes des tweets pour arrêter ou démarrer léa
  * Cela représente aussi le texte qu'affiche Léa quand elle est en pause.
  */
-Configuration.TWEET_LEA_START = '@sqli_leo start';
-Configuration.TWEET_LEA_STOP = '@sqli_leo stop';
-Configuration.TEXT_LEA_PAUSE = '  Tweetez moi sur                          @devfest_lea';
-
+Configuration.USER_TWITTER = '@devfest_lea';
+Configuration.TWEET_LEA_START = Configuration.USER_TWITTER + ' start';
+Configuration.TWEET_LEA_STOP = Configuration.USER_TWITTER + ' stop';
+Configuration.TEXT_LEA_PAUSE = '  Tweetez moi sur                          ' + Configuration.USER_TWITTER;
+Configuration.TEXT_LEA_DEMO_ON = 'demo on';
+Configuration.TEXT_LEA_DEMO_OFF = 'demo off';
 
 Configuration.processConst = {
     TYPE: {
@@ -58,29 +61,29 @@ Configuration.processConst = {
 };
 
 Configuration.easterEggs = [
-    {text: "rigole", alternativeText: "@sqli_leo rigole", mp3: "sos"},
-    {text: "gangster", alternativeText: "@sqli_leo gangster", mp3: "affranchis"},
-    {text: "colle", alternativeText: "@sqli_leo colle", mp3: "colle"},
-    {text: "exorciste", alternativeText: "@sqli_leo exorciste", mp3: "exorciste"},
-    {text: "diable", alternativeText: "@sqli_leo diable", mp3: "diale"},
-    {text: "lot1", alternativeText: "@sqli_leo lot1", mp3: "lot1"},
-    {text: "lot2", alternativeText: "@sqli_leo lot2", mp3: "lot2"},
-    {text: "lot3", alternativeText: "@sqli_leo lot3", mp3: "lot3"},
-        {text: "perdu1", alternativeText: "@sqli_leo perdu1", mp3: "perdu1"},
-    {text: "dora", alternativeText: "@sqli_leo dora", mp3: "c gagné"},
-    {text: "felicitations", alternativeText: "@sqli_leo felicitations", mp3: "félicitations"},
-    {text: "feu artifice", alternativeText: "@sqli_leo feu artifice", mp3: "feu artifice"},
-    {text: "formidable", alternativeText: "@sqli_leo formidable", mp3: "formidable"},
-    {text: "foule", alternativeText: "@sqli_leo foule", mp3: "foule"},
-    {text: "the best", alternativeText: "@sqli_leo the best", mp3: "simply the best"},
-    {text: "gagne", alternativeText: "@sqli_leo gagne", mp3: "tu as gagné"},
-    {text: "champion", alternativeText: "@sqli_leo champion", mp3: "we are the champion"}
+    {text: "rigole", alternativeText: Configuration.USER_TWITTER + " rigole", mp3: "sos"},
+    {text: "gangster", alternativeText: Configuration.USER_TWITTER + " gangster", mp3: "affranchis"},
+    {text: "colle", alternativeText: Configuration.USER_TWITTER + " colle", mp3: "colle"},
+    {text: "exorciste", alternativeText: Configuration.USER_TWITTER + " exorciste", mp3: "exorciste"},
+    {text: "diable", alternativeText: Configuration.USER_TWITTER + " diable", mp3: "diale"},
+    {text: "lot1", alternativeText: Configuration.USER_TWITTER + " lot1", mp3: "lot1"},
+    {text: "lot2", alternativeText: Configuration.USER_TWITTER + " lot2", mp3: "lot2"},
+    {text: "lot3", alternativeText: Configuration.USER_TWITTER + " lot3", mp3: "lot3"},
+        {text: "perdu1", alternativeText: Configuration.USER_TWITTER + " perdu1", mp3: "perdu1"},
+    {text: "dora", alternativeText: Configuration.USER_TWITTER + " dora", mp3: "c gagne"},
+    {text: "felicitations", alternativeText: Configuration.USER_TWITTER + " felicitations", mp3: "felicitations"},
+    {text: "feu artifice", alternativeText: Configuration.USER_TWITTER + " feu artifice", mp3: "feu artifice"},
+    {text: "formidable", alternativeText: Configuration.USER_TWITTER + " formidable", mp3: "formidable"},
+    {text: "foule", alternativeText: Configuration.USER_TWITTER + " foule", mp3: "foule"},
+    {text: "the best", alternativeText: Configuration.USER_TWITTER + " the best", mp3: "simply the best"},
+    {text: "gagne", alternativeText: Configuration.USER_TWITTER + " gagne", mp3: "tu as gagne"},
+    {text: "champion", alternativeText: Configuration.USER_TWITTER + " champion", mp3: "we are the champion"}
 ];
 
 Configuration.sounds = [
-    {text: "perdu1", alternativeText: "@sqli_leo perdu1", mp3: "perdu1"},
-    {text: "feu artifice", alternativeText: "@sqli_leo feu artifice", mp3: "feu artifice"},
-    {text: "formidable", alternativeText: "@sqli_leo formidable", mp3: "formidable"},
-    {text: "foule", alternativeText: "@sqli_leo foule", mp3: "foule"},
-    {text: "the best", alternativeText: "@sqli_leo the best", mp3: "simply the best"}
+    {text: "perdu1", alternativeText: Configuration.USER_TWITTER + " perdu1", mp3: "perdu1"},
+    {text: "feu artifice", alternativeText: Configuration.USER_TWITTER + " feu artifice", mp3: "feu artifice"},
+    {text: "formidable", alternativeText: Configuration.USER_TWITTER + " formidable", mp3: "formidable"},
+    {text: "foule", alternativeText: Configuration.USER_TWITTER + " foule", mp3: "foule"},
+    {text: "the best", alternativeText: Configuration.USER_TWITTER + " the best", mp3: "simply the best"}
 ];

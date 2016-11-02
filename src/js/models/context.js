@@ -34,7 +34,7 @@ export default class Context {
          * Léa est désactivable à distance par l'intermédiaire
          * d"un envoi de tweet. Elle réactivable par le même biai.
          */
-        this.isLeaSpeaking  = true;
+        this.isLeaSpeaking  = false;
 
         /*
          * Indique le numéro d'arrivée du tweet.
@@ -46,5 +46,7 @@ export default class Context {
          * Liste des paliers gagnants
          */
         this.gamification;
+
+        this.isDemoMode = false;
    }
 }

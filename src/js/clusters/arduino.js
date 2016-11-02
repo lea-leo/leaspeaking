@@ -29,9 +29,11 @@ Arduino.messageHandler = function(msg) {
 	// Envoi du tweet par le port série avec serialPort
 	if(arduinoPort == '' || arduinoPort == undefined) {
 		// Détermination du port de communication de l'Arduino
+		console.log("Le port de l'Arduino est absent. Il faut le déterminer...");
 		getCurrentPort(msg);
 	} else {
-	    // Ecriture sur le port de communication de l'Arduino
+	    // Ecriture sur le port série de l'Arduino
+		console.log("Ecriture sur le port série de l'Arduino");
 		writeDataOnArduinoSerial(msg);
 	}
 };
@@ -43,7 +45,8 @@ Arduino.messageHandler = function(msg) {
 function getCurrentPort(msg) {
 	SerialPort.list(function(err, result) {
 		result.filter(function(val) {
-			if (val.manufacturer == "Arduino_LLC") {
+			if (val.manufacturer.toLowerCase().startsWith("arduino")) {
+			//if (val.manufacturer == "Arduino_LLC" || val.manufacturer == "Arduino__www.arduino.cc_") {
 				arduinoPortName = val.comName;
 				arduinoPort = new SerialPort(arduinoPortName);
 				arduinoPort.on('open', function() {
