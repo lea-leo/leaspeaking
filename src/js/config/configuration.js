@@ -12,7 +12,7 @@ export default class Configuration {
 /*
  * Compte twitter des admin de Léa
  */
-Configuration.ADMINS = ["thedireizh", "devfest_lea", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
+Configuration.ADMINS = ["thedireizh", "devfest_lea", "fwlodarezack", "ahoudre", "adrienlasselle"];
 //Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "devfest_lea", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
 //Configuration.ADMINS = ["thedireizh", "lynchmaniacPL", "fwlodarezack", "ahoudre", "AdrienLASSELLE"];
 

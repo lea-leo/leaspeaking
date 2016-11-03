@@ -124,14 +124,22 @@ export default class Utils {
     }
 
     static isAdmin(name) {
-        return Configuration.ADMINS.toLowerCase().indexOf(name.toLowerCase()) != -1;
+        return Configuration.ADMINS.indexOf(name.toLowerCase()) != -1;
     }
     static isDemoOff(tweet) {
-        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_OFF.toLowerCase()) != -1;
+        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_OFF.toString().toLowerCase()) != -1;
     }
     static isDemoOn(tweet) {
-        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_ON.toLowerCase()) != -1;
+        return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_ON.toString().toLowerCase()) != -1;
     }
+    /*static test(name) {
+        console.log("Configuration.ADMINS.toString().toLowerCase() : " + Configuration.ADMINS.toString().toLowerCase());
+        console.log("name.toLowerCase() : " + name.toLowerCase());
+        console.log("Configuration.ADMINS : " + Configuration.ADMINS);
+        console.log("Configuration.ADMINS.indexOf : " + Configuration.ADMINS.indexOf(name));
+        console.log("Configuration.ADMINS.indexOf : " + Configuration.ADMINS.indexOf(name.toLowerCase()));
+        return Configuration.ADMINS.toString().toLowerCase().indexOf(name.toLowerCase()) != -1;
+    }*/
     /**
      * Permets de démarrer ou de stopper Léa par l'envoi d'un
      * simple tweet. L'expéditeur doit faire parti des ADMINS
