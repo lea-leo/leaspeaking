@@ -51,7 +51,7 @@
      */
 
     if (cluster.isMaster) {
-
+//Utils.test("AdrienLASSELLE");
 
         // Mise à jour des paliers
         context.gamification = Utils.getGamification();

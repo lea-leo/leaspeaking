@@ -19,7 +19,8 @@ Configuration.ADMINS = ["thedireizh", "devfest_lea", "fwlodarezack", "ahoudre", 
 /*
  * Listes des commandes d'action pour Léa
  */
-Configuration.CLASSIC_MOTIONS = ["AMELIE_POULAIN", "TWIN_PEAKS"];
+Configuration.CLASSIC_MOTIONS = ["KUNG_FU_PANDA", "SHAOLIN_SOCCER"];
+//Configuration.CLASSIC_MOTIONS = ["AMELIE_POULAIN", "TWIN_PEAKS"];
 
 /*
  * Fichier contenant le nombre de tweets reçu
@@ -69,10 +70,9 @@ Configuration.easterEggs = [
     {text: "lot1", alternativeText: Configuration.USER_TWITTER + " lot1", mp3: "lot1"},
     {text: "lot2", alternativeText: Configuration.USER_TWITTER + " lot2", mp3: "lot2"},
     {text: "lot3", alternativeText: Configuration.USER_TWITTER + " lot3", mp3: "lot3"},
-        {text: "perdu1", alternativeText: Configuration.USER_TWITTER + " perdu1", mp3: "perdu1"},
-    {text: "dora", alternativeText: Configuration.USER_TWITTER + " dora", mp3: "c gagne"},
+    {text: "perdu1", alternativeText: Configuration.USER_TWITTER + " perdu1", mp3: "perdu1"},
+    {text: "dora", alternativeText: Configuration.USER_TWITTER + " dora", mp3: "gagnant_Dora"},
     {text: "felicitations", alternativeText: Configuration.USER_TWITTER + " felicitations", mp3: "felicitations"},
-    {text: "feu artifice", alternativeText: Configuration.USER_TWITTER + " feu artifice", mp3: "feu artifice"},
     {text: "formidable", alternativeText: Configuration.USER_TWITTER + " formidable", mp3: "formidable"},
     {text: "foule", alternativeText: Configuration.USER_TWITTER + " foule", mp3: "foule"},
     {text: "the best", alternativeText: Configuration.USER_TWITTER + " the best", mp3: "simply the best"},
@@ -82,7 +82,6 @@ Configuration.easterEggs = [
 
 Configuration.sounds = [
     {text: "perdu1", alternativeText: Configuration.USER_TWITTER + " perdu1", mp3: "perdu1"},
-    {text: "feu artifice", alternativeText: Configuration.USER_TWITTER + " feu artifice", mp3: "feu artifice"},
     {text: "formidable", alternativeText: Configuration.USER_TWITTER + " formidable", mp3: "formidable"},
     {text: "foule", alternativeText: Configuration.USER_TWITTER + " foule", mp3: "foule"},
     {text: "the best", alternativeText: Configuration.USER_TWITTER + " the best", mp3: "simply the best"}
