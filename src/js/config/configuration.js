@@ -45,6 +45,7 @@ Configuration.USER_TWITTER = '@devfest_lea';
 Configuration.TWEET_LEA_START = Configuration.USER_TWITTER + ' start';
 Configuration.TWEET_LEA_STOP = Configuration.USER_TWITTER + ' stop';
 Configuration.TEXT_LEA_PAUSE = '  Tweetez moi sur                          ' + Configuration.USER_TWITTER;
+Configuration.TEXT_LEA_START_UP = '  Prete a participer                          au Devfest';
 Configuration.TEXT_LEA_DEMO_ON = 'demo on';
 Configuration.TEXT_LEA_DEMO_OFF = 'demo off';
 

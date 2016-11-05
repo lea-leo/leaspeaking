@@ -159,7 +159,7 @@
         // tweet de bienvenue ainsi que l'accompagnement vocal
         clusterArduino.on('online', function(worker) {
             //Sound.playSound("bienvenue");
-            //clusterArduino.send(Utils.generatePauseTweet());
+            clusterArduino.send(Utils.generateStartUpTweet());
         });
 
         // Temps de latence pour permettre l'initialisation des workers

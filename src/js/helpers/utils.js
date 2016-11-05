@@ -169,10 +169,29 @@ export default class Utils {
      * Génère et renvoie un tweet indiquant que Léa fait une pause
      * @returns {Tweet}
      */
-    static generatePauseTweet() {
-        var tweet = new Tweet("", "", Configuration.TEXT_LEA_PAUSE);
+    static generateTweet(text) {
+        var tweet = new Tweet("", "", text);
         tweet.isSpecial = true;
         return tweet;
+    }
+
+    /**
+     * Génère et renvoie un tweet indiquant que Léa fait une pause
+     * @returns {Tweet}
+     */
+    static generatePauseTweet() {
+        return Utils.generateTweet(Configuration.TEXT_LEA_PAUSE);
+        /*var tweet = new Tweet("", "", Configuration.TEXT_LEA_PAUSE);
+        tweet.isSpecial = true;
+        return tweet;*/
+    }
+
+    /**
+     * Génère et renvoie un tweet indiquant que Léa est prête à jouer
+     * @returns {Tweet}
+     */
+    static generateStartUpTweet() {
+        return Utils.generateTweet(Configuration.TEXT_LEA_START_UP);
     }
 };
 
