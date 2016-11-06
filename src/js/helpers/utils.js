@@ -27,8 +27,14 @@ export default class Utils {
      * Renvoie une commande aléatoire.
      * @returns {*} une commande aléatoire
      */
-    static getRandomMotion() {
-        if (Utils.getRandomInt(0,9)%2 == 0) {
+    static getRandomMotion(sound) {
+        var result = Configuration.easterEggs.find(function(easterEgg) {
+            return sound == easterEgg.mp3;
+        });
+
+        if (result && result.motion) {
+            return result.motion;
+        } else if (Utils.getRandomInt(0,9)%2 == 0) {
             return Configuration.CLASSIC_MOTIONS[0];
         } else {
             return Configuration.CLASSIC_MOTIONS[1];

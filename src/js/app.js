@@ -52,6 +52,7 @@
 
     if (cluster.isMaster) {
 //Utils.test("AdrienLASSELLE");
+        //console.log(Utils.getRandomMotion("sos"));
 
         // Mise à jour des paliers
         context.gamification = Utils.getGamification();
@@ -93,7 +94,7 @@
                       tweet.winner = true;
                       gamificationLevel = null;
                   } else {
-                      tweet.motion  = Utils.getRandomMotion();
+                      tweet.motion  = Utils.getRandomMotion(tweet.sound);
                   }
                   console.log("Le tweet à afficher : ");
                   console.log(tweet);

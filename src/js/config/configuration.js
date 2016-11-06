@@ -63,10 +63,10 @@ Configuration.processConst = {
 };
 
 Configuration.easterEggs = [
-    {text: "rigole", alternativeText: Configuration.USER_TWITTER + " rigole", mp3: "sos"},
+    {text: "rigole", alternativeText: Configuration.USER_TWITTER + " rigole", mp3: "sos", motion:"SOS"},
     {text: "gangster", alternativeText: Configuration.USER_TWITTER + " gangster", mp3: "affranchis"},
     {text: "colle", alternativeText: Configuration.USER_TWITTER + " colle", mp3: "colle"},
-    {text: "exorciste", alternativeText: Configuration.USER_TWITTER + " exorciste", mp3: "exorciste"},
+    {text: "exorciste", alternativeText: Configuration.USER_TWITTER + " exorciste", mp3: "exorciste", motion: "EXORCISTE"},
     {text: "diable", alternativeText: Configuration.USER_TWITTER + " diable", mp3: "diale"},
     {text: "lot1", alternativeText: Configuration.USER_TWITTER + " lot1", mp3: "lot1"},
     {text: "lot2", alternativeText: Configuration.USER_TWITTER + " lot2", mp3: "lot2"},
