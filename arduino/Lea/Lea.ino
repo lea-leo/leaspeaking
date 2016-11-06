@@ -24,16 +24,16 @@ int RIGHT_ARM_MIDDLE = 70;
 int RIGHT_ARM_HIGH = 110;
 
 int LEFT_ARM_LOW = 180;
-int LEFT_ARM_MIDDLE = 135;
-int LEFT_ARM_HIGH = 90;
+int LEFT_ARM_MIDDLE = 150;
+int LEFT_ARM_HIGH = 130;
 
 int HEAD_RIGHT = 0;
 int HEAD_RIGHT_SOFT = 40;
 int HEAD_MIDDLE = 80;
 int HEAD_LEFT_SOFT = 120;
 int HEAD_LEFT = 160;
+  
 
- 
 // LES LED RVB
 const int R=1; 
 const int V=1; 
@@ -58,6 +58,7 @@ const String EXORCISTE = "EXORCISTE";
 const String SOS = "SOS";
 const String WINNER = "WINNER";
 const String WINNER_VOIX = "WINNER_VOIX";
+const String NO_MOTION = "NO_MOTION";
 
 
 String motion = KUNG_FU_PANDA;
@@ -190,6 +191,9 @@ void loop()
 }
 
 void leaMove() {
+  if (motion == NO_MOTION) {
+    return;  
+  }
   initializeMoves();
 
   if (motion == KUNG_FU_PANDA) {
@@ -270,9 +274,9 @@ void initializeMoves() {
   attachServo();
   delay(100);
   ledRVBpwm(255,0,234);
-  rightArm.write(20);
-  leftArm.write(180);
-  head.write(80);
+  rightArm.write(RIGHT_ARM_LOW);
+  leftArm.write(LEFT_ARM_LOW);
+  head.write(HEAD_MIDDLE);
   delay(100);
   detachServo();  
 }
