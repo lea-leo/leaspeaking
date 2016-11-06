@@ -19,21 +19,21 @@ int pos = 180;
 int LOW_POSITION =  180;
 int HIGH_POSITION =  0;
 
-int RIGHT_ARM_LOW = 0;
-int RIGHT_ARM_MIDDLE = 40;
-int RIGHT_ARM_HIGH = 80;
+int RIGHT_ARM_LOW = 20;
+int RIGHT_ARM_MIDDLE = 70;
+int RIGHT_ARM_HIGH = 110;
 
-int LEFT_ARM_LOW = 80;
-int LEFT_ARM_MIDDLE = 40;
-int LEFT_ARM_HIGH = 0;
+int LEFT_ARM_LOW = 180;
+int LEFT_ARM_MIDDLE = 135;
+int LEFT_ARM_HIGH = 90;
 
 int HEAD_RIGHT = 0;
-int HEAD_RIGHT_SOFT = 20;
-int HEAD_MIDDLE = 40;
-int HEAD_LEFT = 80;
-int HEAD_LEFT_SOFT = 60;
+int HEAD_RIGHT_SOFT = 40;
+int HEAD_MIDDLE = 80;
+int HEAD_LEFT_SOFT = 120;
+int HEAD_LEFT = 160;
 
-
+ 
 // LES LED RVB
 const int R=1; 
 const int V=1; 
@@ -55,6 +55,9 @@ int fadeAmount = 5;    // how many points to fade the LED by
 const String KUNG_FU_PANDA = "KUNG_FU_PANDA";
 const String SHAOLIN_SOCCER = "SHAOLIN_SOCCER";
 const String EXORCISTE = "EXORCISTE";
+const String SOS = "SOS";
+const String WINNER = "WINNER";
+const String WINNER_VOIX = "WINNER_VOIX";
 
 
 String motion = KUNG_FU_PANDA;
@@ -70,11 +73,7 @@ void setup()
   Serial.begin(9600);
 
   // Initailisation du positionnement des servo
-  attachServo();
-  rightArm.write(RIGHT_ARM_LOW);
-  leftArm.write(LEFT_ARM_LOW);
-  head.write(HEAD_MIDDLE);
-  detachServo();
+  initializeMoves();
 
   // Initialisation des LED
   pinMode(led, OUTPUT);// LED ROSE
@@ -95,14 +94,6 @@ void setup()
   //ledRVBpwm(255,228,0); // Orange KO
   //ledRVBpwm(0,255,0); // Vert OK
   //exorcisteHead();
-  
-  //analogWrite(ledRouge, 255);
-  //digitalWrite(ledBleu, LOW);
-  delay(1000);
-  //ledRVBpwm(0,255,0);
-  delay(1000);
-  //ledRVBpwm(0,0,255);
-  delay(1000);
 }
 
 /**
@@ -208,36 +199,20 @@ void leaMove() {
     moveHeadYesNoSoft();
   } else if (motion == SHAOLIN_SOCCER) {
     ledRVBpwm(255, 0,0);
-    delay(500);
-    moveArmsTogether();
+    digitalWrite(led, HIGH);
+    moveArmsTogether(40);
   } else if (motion == EXORCISTE) {
-    ledRVBpwm(0, 255,0);
-    exorcisteHead();
+    exorciste();
+  } else if (motion == SOS) {
+    sos();
+  } else if (motion == WINNER) {
+    winner();
+  } else if (motion == WINNER_VOIX) {
+    winnerVoix();
   }
-  /*delay(500);
-  digitalWrite(ledVert,LOW); // allume la couleur voulue
-  delay(200); // pause
-  digitalWrite(ledVert,HIGH); // éteint la couleur voulue
-  delay(200); // pause
-  
-  moveArmsTogether();
-
-  ledRVBpwm(124, 88,0);
-
-  delay(500);
+  delay(100);
+  digitalWrite(led, LOW);
   initializeMoves();
-  
-  delay(500);
-  digitalWrite(ledBleu,LOW); // allume la couleur voulue
-  delay(200); // pause
-  digitalWrite(ledBleu,HIGH); // éteint la couleur voulue
-  delay(200); // pause
-
-  delay(500);
-  moveArmsAlternate();
-*/
-  initializeMoves();
-
 }
 
 /**
@@ -269,30 +244,18 @@ void ledRVBpwm(int pwmRouge, int pwmVert, int pwmBleu) { // reçoit valeur 0-255
  * Récupération des données contenues dans le message
  */
 void parseMessage(String message) {
-  // Memory pool for JSON object tree.
+  // Buffer de mémoire
   StaticJsonBuffer<1000> jsonBuffer;
 
-  // Root of the object tree.
+  // Racine de l'arbre json
   JsonObject& root = jsonBuffer.parseObject(message);
 
-  // Test if parsing succeeds.
+  // Teste si le parsing est OK ou non
   if (!root.success()) {
     Serial.println("parseObject() failed");
   }
   
   // Fetch values.
-  //
-  // Most of the time, you can rely on the implicit casts.
-  // In other case, you can do root["time"].as<long>();
-  /*int motionNumber = root["motion"];
-  Serial.println(motionNumber);
-  if (motionNumber == 1) {
-    Serial.println("je suis dans kung fu panda");
-    motion =  KUNG_FU_PANDA;
-  } else if (motionNumber == 2) {
-    Serial.println("je suis dans shaolin soccer");
-    motion =  SHAOLIN_SOCCER;
-  }*/
   motion = root["motion"].asString();
   tweet = root["tweet"].asString();
   rank = root["rank"].asString();
@@ -305,9 +268,13 @@ void parseMessage(String message) {
 
 void initializeMoves() {
   attachServo();
-  rightArm.write(RIGHT_ARM_LOW);
-  leftArm.write(LEFT_ARM_LOW);
-  head.write(HEAD_MIDDLE);  
+  delay(100);
+  ledRVBpwm(255,0,234);
+  rightArm.write(20);
+  leftArm.write(180);
+  head.write(80);
+  delay(100);
+  detachServo();  
 }
 
 void attachServo() {
@@ -362,7 +329,7 @@ void moveUpArmsAlternate() {
       rightArm.write(pos);
       leftArm.write(pos);
       delay(40);
-    }  
+ }  
 }
 
 void moveDownArmsAlternate() {
@@ -376,25 +343,26 @@ void moveDownArmsAlternate() {
 /**
  * Bouge les bras de manière coordonnée
  */
-void moveArmsTogether() {
-  moveUpArmsTogether();
-  moveDownArmsTogether();
+void moveArmsTogether(int delayTime) {
+  attachServo();
+  moveUpArmsTogether(delayTime);
+  moveDownArmsTogether(delayTime);
   detachServo();  
 }
 
-void moveUpArmsTogether() {
+void moveUpArmsTogether(int delayTime) {
   for (pos = RIGHT_ARM_LOW; pos <= RIGHT_ARM_HIGH; pos += 1) {
     rightArm.write(pos);
     leftArm.write(LEFT_ARM_LOW - pos);
-    delay(40);
+    delay(delayTime);
   }  
 }
 
-void moveDownArmsTogether() {
+void moveDownArmsTogether(int delayTime) {
   for (pos = RIGHT_ARM_HIGH; pos >= RIGHT_ARM_LOW; pos -= 1) {
     rightArm.write(pos);
     leftArm.write(LEFT_ARM_LOW - pos);
-    delay(40);
+    delay(delayTime);
   }
 }
 
@@ -408,7 +376,7 @@ void moveHeadYesNoSoft() {
   moveHeadFromRightToMiddleSoft();
   detachServo();
 }
-
+     
 void moveHeadFromMiddleToLeftSoft() {
   for (pos = HEAD_MIDDLE; pos <= HEAD_LEFT_SOFT; pos += 1) {
     head.write(pos);
@@ -423,6 +391,13 @@ void moveHeadFromLeftToRightSoft() {
   } 
 }
 
+void moveHeadFromLeftToMiddleSoft() {
+  for (pos = HEAD_LEFT_SOFT; pos >= HEAD_MIDDLE; pos -= 1) {
+    head.write(pos);
+    delay(40);
+  } 
+}
+
 void moveHeadFromRightToMiddleSoft() {
   for (pos = HEAD_RIGHT_SOFT; pos <= HEAD_MIDDLE; pos += 1) {
     head.write(pos);
@@ -430,11 +405,73 @@ void moveHeadFromRightToMiddleSoft() {
   }   
 }
 
+void moveHeadFromMiddleToRightSoft() {
+  for (pos = HEAD_MIDDLE; pos >= HEAD_RIGHT_SOFT; pos -= 1) {
+    head.write(pos);
+    delay(40);
+  }  
+}
 
+void moveUpArmRightSoft() {
+  for (pos = RIGHT_ARM_LOW; pos <= RIGHT_ARM_MIDDLE; pos += 1) {
+    rightArm.write(pos);
+    delay(40);
+  }
+}
+
+void moveDownArmRightSoft() {
+  for (pos = RIGHT_ARM_MIDDLE; pos >= RIGHT_ARM_LOW; pos -= 1) {
+    rightArm.write(pos);
+    delay(40);
+  }
+}
+
+void moveUpArmRight(int delayTime) {
+  for (pos = RIGHT_ARM_LOW; pos <= RIGHT_ARM_HIGH; pos += 1) {
+    rightArm.write(pos);
+    delay(delayTime);
+  }
+}
+
+void moveDownArmRight(int delayTime) {
+  for (pos = RIGHT_ARM_HIGH; pos >= RIGHT_ARM_LOW; pos -= 1) {
+    rightArm.write(pos);
+    delay(delayTime);
+  }
+}
+
+void moveUpArmLeftSoft() {
+  for (pos = LEFT_ARM_LOW; pos >= LEFT_ARM_MIDDLE; pos -= 1) {
+      leftArm.write(pos);
+      delay(40);
+ }
+}
+
+void moveDownArmLeftSoft() {
+  for (pos = LEFT_ARM_MIDDLE; pos <= LEFT_ARM_LOW; pos += 1) {
+    leftArm.write(pos);
+    delay(40);
+  }
+}
+
+void moveUpArmLeft(int delayTime) {
+  for (pos = LEFT_ARM_LOW; pos >= LEFT_ARM_HIGH; pos -= 1) {
+      leftArm.write(pos);
+      delay(delayTime);
+ }
+}
+
+void moveDownArmLeft(int delayTime) {
+  for (pos = LEFT_ARM_HIGH; pos <= LEFT_ARM_LOW; pos += 1) {
+    leftArm.write(pos);
+    delay(delayTime);
+  }
+}
 /**
  * Easter Egg Exorciste
  */
-void exorcisteHead() {
+void exorciste() {
+  ledRVBpwm(0, 255,0);
   attachServo();
   // Mouvement tête
   for (int i = 0; i <= 50; i += 1) {
@@ -443,6 +480,7 @@ void exorcisteHead() {
     head.write(60);
     delay(50);    
   }
+  // Mouvement bras
   for (int i = 0; i <= 50; i += 1) {
     rightArm.write(RIGHT_ARM_HIGH);
     leftArm.write(LEFT_ARM_HIGH);
@@ -454,3 +492,59 @@ void exorcisteHead() {
   detachServo();
 }
 
+/**
+ * Easter Egg SOS
+ */
+void sos() {
+  ledRVBpwm(0, 50,50);
+  attachServo();
+
+  for (int i = 0; i <= 20; i += 1) {
+    rightArm.write(RIGHT_ARM_HIGH -10);
+    leftArm.write(LEFT_ARM_HIGH);
+    delay(100);
+    rightArm.write(RIGHT_ARM_HIGH);
+    leftArm.write(LEFT_ARM_HIGH + 10);
+    delay(100);
+  }
+  detachServo();
+}
+
+/**
+ * Gagnant
+ */
+void winner() {
+  ledRVBpwm(0, 255,255);
+  attachServo();
+  
+  moveHeadFromMiddleToRightSoft();
+  moveHeadFromRightToMiddleSoft();
+  
+  moveUpArmRight(10);
+  moveDownArmRight(10);
+  
+  moveHeadFromMiddleToLeftSoft();
+  moveHeadFromLeftToMiddleSoft();
+
+  moveUpArmLeft(10);
+  moveDownArmLeft(10);
+
+  detachServo();
+}
+
+void winnerVoix() {
+  ledRVBpwm(0, 255,255);
+  attachServo();
+  
+  moveUpArmsTogether(10);
+  delay(200);
+  moveDownArmsTogether(10);
+  delay(200);
+  moveUpArmsTogether(10);
+  delay(200);
+  moveDownArmsTogether(10);
+  delay(200);
+
+
+  detachServo();
+}
