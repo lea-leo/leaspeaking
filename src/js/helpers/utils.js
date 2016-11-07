@@ -161,13 +161,14 @@ export default class Utils {
                 console.log("tweet de stop");
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = false;
+                clusterArduino.send(Utils.generatePauseTweet());
             } else  if (tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
                 console.log("tweet de start");
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = true;
                 Sound.playSound("bienvenue");
+                clusterArduino.send(Utils.generateStartTweet());
             }
-            clusterArduino.send(Utils.generatePauseTweet());
         }
     }
 
@@ -178,6 +179,7 @@ export default class Utils {
     static generateTweet(text) {
         var tweet = new Tweet("", "", text);
         tweet.isSpecial = true;
+        tweet.motion = "NO_MOTION";
         return tweet;
     }
 
@@ -186,10 +188,8 @@ export default class Utils {
      * @returns {Tweet}
      */
     static generatePauseTweet() {
+        console.log("Je génére un tweet de pause");
         return Utils.generateTweet(Configuration.TEXT_LEA_PAUSE);
-        /*var tweet = new Tweet("", "", Configuration.TEXT_LEA_PAUSE);
-        tweet.isSpecial = true;
-        return tweet;*/
     }
 
     /**
@@ -198,6 +198,14 @@ export default class Utils {
      */
     static generateStartUpTweet() {
         return Utils.generateTweet(Configuration.TEXT_LEA_START_UP);
+    }
+
+    /**
+     * Génère et renvoie un tweet indiquant que Léa est prête à jouer
+     * @returns {Tweet}
+     */
+    static generateStartTweet() {
+        return Utils.generateTweet(Configuration.TEXT_LEA_START);
     }
 };
 

@@ -86,7 +86,10 @@
                   Utils.fillTweetRank(tweet, context.rank);
 
                   // On regarde si le tweet est gagnant
-                  var gamificationLevel = Utils.isTweetWinner(context.gamification, context.rank);
+                  var gamificationLevel = null;
+                  if (!Utils.isAdmin(tweet.screenName)) {
+                      gamificationLevel = Utils.isTweetWinner(context.gamification, context.rank);
+                  }
                   if (gamificationLevel != null && tweet.fresh)  {
                       clusterTwitter.send({action: Configuration.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: context.rank});
                       tweet.motion  = gamificationLevel.motion;
