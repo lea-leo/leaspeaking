@@ -92,8 +92,8 @@ Configuration.easterEggs = [
 
 Configuration.sounds = [
     {text: "perdu voix", alternativeText: Configuration.USER_TWITTER + " perdu voix", mp3: "perdu_voix"},
-    {text: "perdu monstre", alternativeText: Configuration.USER_TWITTER + " perdu monstre", mp3: "perdu_monstre"},
+    {text: "perdu loose", alternativeText: Configuration.USER_TWITTER + " perdu loose", mp3: "perdu_loose"},
     {text: "perdu trombone", alternativeText: Configuration.USER_TWITTER + " perdu trombone", mp3: "perdu_trombone"},
-    {text: "perdu zombie attack", alternativeText: Configuration.USER_TWITTER + " perdu zombie attack", mp3: "perdu_zombie_attack"},
-    {text: "perdu zombie loose", alternativeText: Configuration.USER_TWITTER + " perdu zombie loose", mp3: "perdu_zombie_loose"},
+    {text: "perdu r2d2", alternativeText: Configuration.USER_TWITTER + " perdu r2d2", mp3: "perdu_r2d2"},
+    {text: "perdu mario", alternativeText: Configuration.USER_TWITTER + " perdu mario", mp3: "perdu_mario"}
 ];
