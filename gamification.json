@@ -1,52 +1,52 @@
 {
   "level_1":{
     "rank":55,
-    "motion": "FIGHT_CLUB",
+    "motion": "WINNER",
     "sound": "gagnant_Dora"
   },
   "level_2":{
     "rank":59,
-    "motion": "FIGHT_CLUB",
+    "motion": "WINNER_VOIX",
     "sound": "gagnant_Gilbert"
   },
   "level_3":{
     "rank":60,
-    "motion": "AMELIE_POULAIN",
+    "motion": "WINNER",
     "sound": "gagnant_Mireille"
   },
   "level_4":{
     "rank":80,
-    "motion": "AMELIE_POULAIN",
+    "motion": "WINNER_VOIX",
     "sound": "gagnant_Queen"
   },
   "level_5":{
     "rank":100,
-    "motion": "TWIN_PEAKS",
+    "motion": "WINNER",
     "sound": "gagnant_Voix"
   },
   "level_6":{
     "rank":120,
-    "motion": "TWIN_PEAKS",
+    "motion": "WINNER_VOIX",
     "sound": "gagnant_Dora"
   },
   "level_7":{
     "rank":140,
-    "motion": "AVATAR",
+    "motion": "WINNER",
     "sound": "gagnant_Gilbert"
   },
   "level_8":{
     "rank":160,
-    "motion": "AVATAR",
+    "motion": "WINNER_VOIX",
     "sound": "gagnant_Mireille"
   },
   "level_9":{
     "rank":180,
-    "motion": "ROCKY",
+    "motion": "WINNER",
     "sound": "gagnant_Queen"
   },
   "level_10":{
     "rank":200,
-    "motion": "ROCKY",
+    "motion": "WINNER_VOIX",
     "sound": "gagnant_Voix"
   }
 }
