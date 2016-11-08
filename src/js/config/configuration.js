@@ -95,5 +95,6 @@ Configuration.sounds = [
     {text: "perdu loose", alternativeText: Configuration.USER_TWITTER + " perdu loose", mp3: "perdu_loose"},
     {text: "perdu trombone", alternativeText: Configuration.USER_TWITTER + " perdu trombone", mp3: "perdu_trombone"},
     {text: "perdu r2d2", alternativeText: Configuration.USER_TWITTER + " perdu r2d2", mp3: "perdu_r2d2"},
-    {text: "perdu mario", alternativeText: Configuration.USER_TWITTER + " perdu mario", mp3: "perdu_mario"}
+    {text: "perdu mario", alternativeText: Configuration.USER_TWITTER + " perdu mario", mp3: "perdu_mario"},
+    {text: "perdu motus", alternativeText: Configuration.USER_TWITTER + " perdu motus", mp3: "perdu_motus"}
 ];
