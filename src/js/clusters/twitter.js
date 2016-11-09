@@ -80,26 +80,26 @@ Twitter.streamTwitter = function() {
 			 console.log("isDemoOn : " + Utils.isDemoOn(tweetReceived));
 			 console.log("isDemonOff : " + Utils.isDemoOff(tweetReceived));
 			 // Si on est un admin et que l'on demande l'activation du mode démo, alors on l'active
-			 if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOn(tweetReceived)) {
+			 /*if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOn(tweetReceived)) {
 				 console.log("Etape 1");
 				 Context.isDemoMode = true;
 			 // Si on est un admin et que l'on demande la désactivation du mode démo, alors on le désactive
 			 } else if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOff(tweetReceived)) {
 				 console.log("Etape 2");
 				 Context.isDemoMode = false;
-			 }
+			 }*/
 			 console.log("Etape 3");
 			 // Si on n'est pas en mode démo et qu'on ne vient pas juste de le désactiver
-			 if (!Utils.isDemoOff(tweetReceived) && !Utils.isDemoOn(tweetReceived)) {
-				 if (!Context.isDemoMode) {
+			 //if (!Utils.isDemoOff(tweetReceived) && !Utils.isDemoOn(tweetReceived)) {
+				 /*if (!Context.isDemoMode) {
 					 console.log("Etape 4");
 					 Twitter.receivingTweet(tweetReceived);
 				 // Si on est admin
 				 } else if (Utils.isAdmin(tweetReceived.user.screen_name)) {
-					 console.log("Etape 5");
+					 console.log("Etape 5");*/
 					 Twitter.receivingTweet(tweetReceived);
-				 }
-			 }
+				 //}
+			 //}
 			 console.log("Etape 6");
 		 }
 	});

@@ -47,6 +47,6 @@ export default class Context {
          */
         this.gamification;
 
-        this.isDemoMode = true;
+        //this.isDemoMode = true;
    }
 }
