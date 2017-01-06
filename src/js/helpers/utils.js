@@ -1,8 +1,10 @@
 "use strict";
 // lodash
-var _ = require('lodash/array');
+let _ = require('lodash/array');
 
-var fs = require('fs');
+let fs = require('fs');
+
+
 
 // Le modèle Tweet
 import Tweet from "../models/tweet";
@@ -132,12 +134,15 @@ export default class Utils {
     static isAdmin(name) {
         return Configuration.ADMINS.indexOf(name.toLowerCase()) != -1;
     }
+
     static isDemoOff(tweet) {
         return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_OFF.toString().toLowerCase()) != -1;
     }
+
     static isDemoOn(tweet) {
         return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_ON.toString().toLowerCase()) != -1;
     }
+    
     /*static test(name) {
         console.log("Configuration.ADMINS.toString().toLowerCase() : " + Configuration.ADMINS.toString().toLowerCase());
         console.log("name.toLowerCase() : " + name.toLowerCase());

@@ -4,8 +4,9 @@ import Configuration from "../config/configuration";
 import Utils from "./utils";
 
 // Audio
-var lame = require('lame');
-var Speaker = require('speaker');
+let lame = require('lame');
+let Speaker = require('speaker');
+let StreamPlayer = require('stream-player');
 
 export default class Sound {
 
@@ -31,6 +32,15 @@ export default class Sound {
             .on('format', function (format) {
                 this.pipe(new Speaker(format));
             });
+    }
+
+    static playSong(song){
+        var player = new StreamPlayer();
+
+        // Ajout de la chanson à jouer
+        player.add(song);
+        // début de la lecture
+        player.play();
     }
 
 }

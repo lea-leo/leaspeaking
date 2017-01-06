@@ -51,7 +51,7 @@
      */
 
     if (cluster.isMaster) {
-//Utils.test("AdrienLASSELLE");
+
         //console.log(Utils.getRandomMotion("sos"));
 
         // Mise à jour des paliers
