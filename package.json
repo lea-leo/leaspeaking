@@ -19,12 +19,13 @@
   },
   "devDependencies": {
     "jasmine": "^2.5.2",
+    "jasmine-spec-reporter": "^3.0.0",
     "joobster": "0.0.7",
     "lodash": "^4.16.6",
     "supertest": "1.1.0"
   },
   "scripts": {
-    "test": "istanbul cover babel-node node_modules/.bin/jasmine",
+    "test": "babel-node spec/jasmine-runner",
     "prestart": "pulseaudio -D",
     "start": "jsr compile:js && node ./dist/js/app",
     "garbage": "jsr compile:js && node ./dist/js/garbage"
