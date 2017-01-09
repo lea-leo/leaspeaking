@@ -77,5 +77,12 @@ Avec le Léonardo, il est possible d'utiliser le module serialport.
 
 La communication Arduino->Rpi a été testé avec succès. Donc pas de souci pour avoir un feedback de l'affichage du tweet.
 
+## Les tests unitaires
 
-
+Les tests sont crée grâce à jasmine et jasmine-report.
+Les fichiers de tests doivent avoirs l'extension .spec.js.
+Le lancement des tests se fait à l'aide de la commande
+  
+```javascript
+npm tests
+```
