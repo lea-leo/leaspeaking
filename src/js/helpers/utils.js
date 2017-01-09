@@ -129,7 +129,6 @@ export default class Utils {
                 console.log(err);
             }
         }
-        //return rank;
     }
 
     static isAdmin(name) {
@@ -171,7 +170,7 @@ export default class Utils {
     }
 
     /**
-     * Génère et renvoie un tweet indiquant que Léa fait une pause
+     * Génère et renvoie un squelette de tweet
      * @returns {Tweet}
      */
     static generateTweet(text) {
