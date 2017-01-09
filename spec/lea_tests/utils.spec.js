@@ -360,7 +360,6 @@ describe("indique si le tweet met le mode demo en action", function() {
     });
 });
 
-
 // Test generateTweet function
 describe("génére un squelette de tweet", function() {
     it("contenant les informations essentielles", function() {
