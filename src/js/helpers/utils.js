@@ -1,8 +1,10 @@
 "use strict";
 // lodash
-let _ = require('lodash/array');
+import _ from 'lodash/array';
+import fs from 'fs';
+//let _ = require('lodash/array');
 
-let fs = require('fs');
+//let fs = require('fs');
 
 
 
@@ -86,7 +88,6 @@ export default class Utils {
         var result = null;
         for (var prop in gamification) {
             if (rank == gamification[prop].rank) {
-                console.log(prop + " atteint");
                 result = gamification[prop];
             }
         }
@@ -143,14 +144,6 @@ export default class Utils {
         return tweet.text.toLowerCase().indexOf(Configuration.TEXT_LEA_DEMO_ON.toString().toLowerCase()) != -1;
     }
     
-    /*static test(name) {
-        console.log("Configuration.ADMINS.toString().toLowerCase() : " + Configuration.ADMINS.toString().toLowerCase());
-        console.log("name.toLowerCase() : " + name.toLowerCase());
-        console.log("Configuration.ADMINS : " + Configuration.ADMINS);
-        console.log("Configuration.ADMINS.indexOf : " + Configuration.ADMINS.indexOf(name));
-        console.log("Configuration.ADMINS.indexOf : " + Configuration.ADMINS.indexOf(name.toLowerCase()));
-        return Configuration.ADMINS.toString().toLowerCase().indexOf(name.toLowerCase()) != -1;
-    }*/
     /**
      * Permets de démarrer ou de stopper Léa par l'envoi d'un
      * simple tweet. L'expéditeur doit faire parti des ADMINS
