@@ -1,4 +1,4 @@
-import SerialPort fromt 'serialport';
+import SerialPort from 'serialport';
 
 import Sound from "../helpers/sound";
 import Utils from "../helpers/utils";
