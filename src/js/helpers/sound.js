@@ -12,14 +12,14 @@ import StreamPlayer from 'stream-player';
 export default class Sound {
 
     static chooseSound(tweet) {
-        var result = Configuration.easterEggs.find(function(sound) {
+        let result = Configuration.easterEggs.find(function(sound) {
             return tweet.text.startsWith(sound.text) || tweet.text.startsWith(sound.alternativeText);
         });
 
         if (!result) {
             // On n'a pas trouvé de son "spécial easter egg"
             // Il faut du coup choisir un son au hasard
-            var indice = Utils.getRandomInt(0,Configuration.sounds.length - 1);
+            let indice = Utils.getRandomInt(0,Configuration.sounds.length - 1);
             result = Configuration.sounds[indice].mp3;
         } else {
             result = result.mp3;
@@ -40,7 +40,7 @@ export default class Sound {
     }
 
     static playSong(song){
-        var player = new StreamPlayer();
+        let player = new StreamPlayer();
 
         // Ajout de la chanson à jouer
         player.add(song);

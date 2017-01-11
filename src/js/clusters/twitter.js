@@ -1,14 +1,13 @@
-var Twitter = require("twitter");
-//var Twitter = require('node-tweet-stream');
+import Twitter from "twitter";
 
 import Tweet from "../models/tweet";
 import Configuration from "../config/configuration";
 import Sound from "../helpers/sound";
 import Context from "../models/context";
 import Utils from "../helpers/utils";
+import logger from "../helpers/log";
 
 var client;
-import logger from "../helpers/log";
 
 /**
  * Constructeur.
@@ -31,7 +30,7 @@ Twitter.streamTwitter = function() {
 	 "access_token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
 	 });
 
-	var stream = client.stream('statuses/filter', {track: 'devfest_lea'});
+	let stream = client.stream('statuses/filter', {track: 'devfest_lea'});
 
 	stream.on('data', function(tweetReceived) {
 		 if (!tweetReceived.retweeted_status) {
@@ -69,7 +68,7 @@ Twitter.streamTwitter = function() {
 }
 
 Twitter.receivingTweet = function(tweetReceived) {
-	var tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
+	let tweet = new Tweet(tweetReceived.user.name, tweetReceived.user.screen_name, tweetReceived.text);
 	// Il faut choisir le son associé au tweet
 	tweet.sound = Sound.chooseSound(tweet);
 	Twitter.process.send({action: Configuration.processConst.ACTION.SHOW_TWEET, tweet: tweet});

@@ -1,4 +1,4 @@
-var SerialPort = require('serialport');
+import SerialPort fromt 'serialport';
 
 import Sound from "../helpers/sound";
 import Utils from "../helpers/utils";

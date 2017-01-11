@@ -25,7 +25,7 @@
     /*
      * Le contexte d'exécution du master
      */
-    let context = new Context();
+    var context = new Context();
 
     /**
      * Cas quand le cluster est esclave. Il ne peut alors s'agir que
@@ -72,7 +72,7 @@
 
         // Ajout du handler message pour le cluster Twitter
         clusterTwitter.on('message', function(msg) {
-          var tweet = msg.tweet;
+          let tweet = msg.tweet;
 
             if (msg.action == Configuration.processConst.ACTION.SHOW_TWEET) {
               // Gestion de l'arrêt et du redémarrage à distance de Léa
@@ -90,7 +90,7 @@
                   Utils.fillTweetRank(tweet, context.rank);
 
                   // On regarde si le tweet est gagnant
-                  var gamificationLevel = null;
+                  let gamificationLevel = null;
                   if (!Utils.isAdmin(tweet.screenName)) {
                       gamificationLevel = Utils.isTweetWinner(context.gamification, context.rank);
                   }
@@ -118,7 +118,7 @@
         // Ajout du handler message pour le cluster Arduino
         clusterArduino.on('message', function(msg) {
             context.isTweetDisplayed = false;
-            var tweet = msg.tweet;
+            let tweet = msg.tweet;
             if (context.isLeaSpeaking) {
                 if (msg.action == Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO) {
                     Utils.saveTweet(tweet);
@@ -139,7 +139,7 @@
 
                 // Si des tweets plus récent sont apparu, on les affiche
                 if (context.freshTweets.length > 0) {
-                    var freshTweet = context.freshTweets[0];
+                    let freshTweet = context.freshTweets[0];
                     if (!context.isTweetDisplayed && context.tweetDisplayed != freshTweet && context.isLeaSpeaking) {
                         context.isTweetDisplayed = true;
                         clusterArduino.send(freshTweet);
@@ -154,7 +154,7 @@
 
                     // Si il existe des tweets historique, le programme les affiche de manière aléatoire
                     if (context.historicTweets.length > 0) {
-                        var historicTweet = context.historicTweets[Utils.getRandomInt(0, context.historicTweets.length - 1)];
+                        let historicTweet = context.historicTweets[Utils.getRandomInt(0, context.historicTweets.length - 1)];
                         context.isTweetDisplayed = true;
                         clusterArduino.send(historicTweet);
                     }
@@ -166,7 +166,6 @@
         // Quand le worker arduino est opérationnel, nous affichons le
         // tweet de bienvenue ainsi que l'accompagnement vocal
         clusterArduino.on('online', function(worker) {
-            //Sound.playSound("bienvenue");
             clusterArduino.send(Utils.generateStartUpTweet());
         });
 

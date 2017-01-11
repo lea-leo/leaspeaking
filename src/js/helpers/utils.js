@@ -29,7 +29,7 @@ export default class Utils {
      * @returns {*} une commande aléatoire
      */
     static getRandomMotion(sound) {
-        var result = Configuration.easterEggs.find(function(easterEgg) {
+        let result = Configuration.easterEggs.find(function(easterEgg) {
             return sound == easterEgg.mp3;
         });
 
@@ -82,8 +82,8 @@ export default class Utils {
      * @returns {boolean} true si le tweet est gagnant, false sinon
      */
     static isTweetWinner(gamification, rank) {
-        var result = null;
-        for (var prop in gamification) {
+        let result = null;
+        for (let prop in gamification) {
             if (rank == gamification[prop].rank) {
                 result = gamification[prop];
             }
@@ -98,12 +98,12 @@ export default class Utils {
      */
     static saveTweet(tweet) {
         if (tweet.fresh) {
-            var configFile = fs.readFileSync(Configuration.TWEETS_DB);
-            var config = JSON.parse(configFile);
+            let configFile = fs.readFileSync(Configuration.TWEETS_DB);
+            let config = JSON.parse(configFile);
             if(_.findIndex(config, function(o) { return o == tweet; }) == -1) {
                 config.push(tweet);
             }
-            var configJSON = JSON.stringify(config);
+            let configJSON = JSON.stringify(config);
             logger.log('info', 'Sauvegarde du tweet courant');
             fs.writeFileSync(Configuration.TWEETS_DB, configJSON);
         }
@@ -118,7 +118,7 @@ export default class Utils {
      */
     static updateAndSaveRankTweet(tweet, context) {
         if (!Utils.isAdmin(tweet.screenName) && tweet.fresh) {
-            var result =  parseInt(context.rank) + 1;
+            let result =  parseInt(context.rank) + 1;
             context.rank = result;
             try {
                 fs.writeFileSync(Configuration.RANK_FILE, context.rank, {"encoding": 'utf8'});
@@ -150,7 +150,7 @@ export default class Utils {
     static startAndStopLea(tweet, clusterArduino, context) {
 
         if (Utils.isAdmin(tweet.screenName)) {
-            console.log("Je suis un admin");
+            logger.log('debug', 'Je suis un admin');
             if (tweet.text.startsWith(Configuration.TWEET_LEA_STOP)) {
                 logger.log('debug', 'tweet de stop');
                 tweet.isSpecial = true;
@@ -171,7 +171,7 @@ export default class Utils {
      * @returns {Tweet}
      */
     static generateTweet(text) {
-        var tweet = new Tweet("", "", text);
+        let tweet = new Tweet("", "", text);
         tweet.isSpecial = true;
         tweet.motion = "NO_MOTION";
         return tweet;
