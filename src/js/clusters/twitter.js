@@ -8,6 +8,7 @@ import Context from "../models/context";
 import Utils from "../helpers/utils";
 
 var client;
+import logger from "../helpers/log";
 
 /**
  * Constructeur.
@@ -23,49 +24,7 @@ function Twitter () {
  */
 Twitter.streamTwitter = function() {
 
-	/*var t = new Twitter({
-		"consumer_key": process.env.TWITTER_CONSUMER_KEY,
-		"consumer_secret": process.env.TWITTER_CONSUMER_SECRET,
-		"token": process.env.TWITTER_ACCESS_TOKEN_KEY,
-		"token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
-	});
-
-	t.on('tweet', function (tweetReceived) {
-		if (!tweetReceived.retweeted_status) {
-			console.log("isAdmin : " + Utils.isAdmin(tweetReceived.user.screen_name));
-			console.log("isDemoOn : " + Utils.isDemoOn(tweetReceived));
-			console.log("isDemonOff : " + Utils.isDemoOff(tweetReceived));
-			// Si on est un admin et que l'on demande l'activation du mode démo, alors on l'active
-			if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOn(tweetReceived)) {
-				console.log("Etape 1");
-				Context.isDemoMode = true;
-			// Si on est un admin et que l'on demande la désactivation du mode démo, alors on le désactive
-			} else if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOff(tweetReceived)) {
-				console.log("Etape 2");
-				Context.isDemoMode = false;
-			}
-			console.log("Etape 3");
-			// Si on n'est pas en mode démo et qu'on ne vient pas juste de le désactiver
-			if (!Utils.isDemoOff(tweetReceived) && !Utils.isDemoOn(tweetReceived)) {
-				if (!Context.isDemoMode) {
-					console.log("Etape 4");
-					Twitter.receivingTweet(tweetReceived);
-					// Si on est admin
-				} else if (Utils.isAdmin(tweetReceived.user.screen_name)) {
-					console.log("Etape 5");
-					Twitter.receivingTweet(tweetReceived);
-				}
-			}
-			console.log("Etape 6");
-		}
-	});
-	t.on('error', function (err) {
-		console.log('Oh no ' + err);
-	});
-
-	t.track('devfest_lea');*/
-
-	client = new Twitter({
+ 	client = new Twitter({
 	 "consumer_key": process.env.TWITTER_CONSUMER_KEY,
 	 "consumer_secret": process.env.TWITTER_CONSUMER_SECRET,
 	 "access_token_key": process.env.TWITTER_ACCESS_TOKEN_KEY,
@@ -76,31 +35,31 @@ Twitter.streamTwitter = function() {
 
 	stream.on('data', function(tweetReceived) {
 		 if (!tweetReceived.retweeted_status) {
-			 console.log("isAdmin : " + Utils.isAdmin(tweetReceived.user.screen_name));
-			 console.log("isDemoOn : " + Utils.isDemoOn(tweetReceived));
-			 console.log("isDemonOff : " + Utils.isDemoOff(tweetReceived));
+			  
+			 logger.log('debug', "isAdmin : " + Utils.isAdmin(tweetReceived.user.screen_name));
+			 logger.log('debug', "isDemoOn : " + Utils.isDemoOn(tweetReceived));
+			 logger.log('debug', "isDemonOff : " + Utils.isDemoOff(tweetReceived));
 			 // Si on est un admin et que l'on demande l'activation du mode démo, alors on l'active
 			 if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOn(tweetReceived)) {
-				 console.log("Etape 1");
+				 logger.log('debug', "Etape 1");
 				 Context.isDemoMode = true;
 			 // Si on est un admin et que l'on demande la désactivation du mode démo, alors on le désactive
 			 } else if (Utils.isAdmin(tweetReceived.user.screen_name) && Utils.isDemoOff(tweetReceived)) {
-				 console.log("Etape 2");
+				 logger.log('debug', "Etape 2");
 				 Context.isDemoMode = false;
 			 }
-			 console.log("Etape 3");
+			 logger.log('debug', "Etape 3");
 			 // Si on n'est pas en mode démo et qu'on ne vient pas juste de le désactiver
 			 if (!Utils.isDemoOff(tweetReceived) && !Utils.isDemoOn(tweetReceived)) {
 				 if (!Context.isDemoMode) {
-					 console.log("Etape 4");
+					 logger.log('debug', "Etape 4");
 					 Twitter.receivingTweet(tweetReceived);
 				 // Si on est admin
 				 } else if (Utils.isAdmin(tweetReceived.user.screen_name)) {
-					 console.log("Etape 5");
+					 logger.log('debug', "Etape 5");
 					 Twitter.receivingTweet(tweetReceived);
 				 }
 			 }
-			 console.log("Etape 6");
 		 }
 	});
 
@@ -136,7 +95,7 @@ Twitter.sendTweet = function(winner) {
 		if(error) {
 			throw error;
 		}
-		console.log("Un tweet gagnant a été envoyé");
+		logger.log('info', 'Un tweet gagnant a été envoyé');
 	});
 };
 

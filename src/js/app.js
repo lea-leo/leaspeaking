@@ -10,6 +10,7 @@
     var Twitter = require("./clusters/twitter");
 
     import Utils from "./helpers/utils";
+    import logger from "./helpers/log";
 
 
     // lodash
@@ -35,15 +36,20 @@
      */
     if (cluster.isWorker) {
       if (process.env['type'] == Configuration.processConst.TYPE.CLUSTER_TWITTER) {
-        console.log('Création du cluster Twitter');
+        logger.log('info', 'Création du cluster Twitter');
         Twitter.process = process;
         process.on('message', Twitter.messageHandler);
       } else if (process.env['type'] == Configuration.processConst.TYPE.CLUSTER_ARDUINO) {
-        console.log('Création du cluster Arduino');
+        logger.log('info', 'Création du cluster Arduino');
         Arduino.process = process;
         process.on('message', Arduino.messageHandler);
       }
     }
+
+
+
+
+
 
     /**
      * Cas pour le cluster master. Il s'agit du chef d'orchestre.
@@ -51,8 +57,6 @@
      */
 
     if (cluster.isMaster) {
-
-        //console.log(Utils.getRandomMotion("sos"));
 
         // Mise à jour des paliers
         context.gamification = Utils.getGamification();
@@ -74,12 +78,12 @@
               // Gestion de l'arrêt et du redémarrage à distance de Léa
                 Utils.startAndStopLea(tweet, clusterArduino, context);
 
-                console.log("Tweet spécial : " + tweet.isSpecial);
-                console.log("LeaSpeaking : " + context.isLeaSpeaking);
+                logger.log('debug', 'Tweet spécial : ' + tweet.isSpecial);
+                logger.log('debug', 'LeaSpeaking : ' + context.isLeaSpeaking);
 
               // Configuration et stockage d'un tweet récemment reçu
               if (context.isLeaSpeaking && !tweet.isSpecial) {
-                  console.log("Ajout du nouveau tweet dans la file d'attente...");
+                  logger.log('info', "Ajout du nouveau tweet dans la file d'attente...");
                   context.freshTweets.push(tweet);
                   // Sauvegarde du rang
                   Utils.updateAndSaveRankTweet(tweet, context);
@@ -99,10 +103,10 @@
                   } else {
                       tweet.motion  = Utils.getRandomMotion(tweet.sound);
                   }
-                  console.log("Le tweet à afficher : ");
-                  console.log(tweet);
+                  logger.log('debug', 'Le tweet à afficher : ');
+                  logger.log('debug', tweet);
                   if (!context.isTweetDisplayed) {
-                      console.log("Demande au worker Arduino d'afficher le tweet");
+                      logger.log('info', "Demande au worker Arduino d'afficher le tweet");
                       context.tweetDisplayed = tweet;
                       context.isTweetDisplayed = true;
                       clusterArduino.send(tweet);
@@ -169,7 +173,7 @@
         // Temps de latence pour permettre l'initialisation des workers
         // avant de lancer l'API streaming Twitter
         setTimeout(function() {
-            console.log("Twitter est sur écoute ...");
+            logger.log('info', 'Twitter est sur écoute ...');
             clusterTwitter.send({action: Configuration.processConst.ACTION.LISTEN_TWEET});
         }, 1000);
 

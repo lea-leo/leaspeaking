@@ -1,12 +1,13 @@
-var fs = require('fs');
-
 import Configuration from "../config/configuration";
 import Utils from "./utils";
 
+import fs from 'fs';
+import logger from "../helpers/log";
+
 // Audio
-let lame = require('lame');
-let Speaker = require('speaker');
-let StreamPlayer = require('stream-player');
+import lame from 'lame';
+import Speaker from 'speaker';
+import StreamPlayer from 'stream-player';
 
 export default class Sound {
 
@@ -27,11 +28,15 @@ export default class Sound {
     }
 
     static playSound(file) {
-        fs.createReadStream('sounds/' + file + '.mp3')
-            .pipe(new lame.Decoder())
-            .on('format', function (format) {
-                this.pipe(new Speaker(format));
-            });
+        if (fs.existsSync('sounds/' + file + '.mp3')) {
+            fs.createReadStream('sounds/' + file + '.mp3')
+                .pipe(new lame.Decoder())
+                .on('format', function (format) {
+                    this.pipe(new Speaker(format));
+                });
+        } else {
+            logger.log('error', 'Aucun fichier son existe sous le nom : ' + file);
+        }
     }
 
     static playSong(song){

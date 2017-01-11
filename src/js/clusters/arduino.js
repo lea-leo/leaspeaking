@@ -3,7 +3,7 @@ var SerialPort = require('serialport');
 import Sound from "../helpers/sound";
 import Utils from "../helpers/utils";
 import Configuration from "../config/configuration";
-
+import logger from "../helpers/log";
 
 // Port arduino
 var arduinoPortName;
@@ -29,11 +29,11 @@ Arduino.messageHandler = function(msg) {
 	// Envoi du tweet par le port série avec serialPort
 	if(arduinoPort == '' || arduinoPort == undefined) {
 		// Détermination du port de communication de l'Arduino
-		console.log("Le port de l'Arduino est absent. Il faut le déterminer...");
+		logger.log('info', "Le port de l'Arduino est absent. Il faut le déterminer...");
 		getCurrentPort(msg);
 	} else {
 	    // Ecriture sur le port série de l'Arduino
-		console.log("Ecriture sur le port série de l'Arduino");
+		logger.log('info', "Ecriture sur le port série de l'Arduino");
 		writeDataOnArduinoSerial(msg);
 	}
 };
@@ -53,10 +53,10 @@ function getCurrentPort(msg) {
 				});
 				// open errors will be emitted as an error event
 				arduinoPort.on('error', function(err) {
-					console.log('Error: ', err.message);
+					logger.log('error', 'Error: ', err.message);
 				});
 			} else {
-				console.log('Impossible de trouver un arduino connecté....')
+				logger.log('error', 'Impossible de trouver un arduino connecté....')
 			}
 		});
 	});
@@ -68,25 +68,25 @@ function getCurrentPort(msg) {
  * @param msg
  */
 function writeDataOnArduinoSerial(tweet) {
-	console.log("écriture du tweet : " + tweet.LCDText);
+	logger.log('debug', 'écriture du tweet : ' + tweet.LCDText);
 	arduinoPort.write("{ 'motion': '" + tweet.motion + "', tweet:'" + tweet.LCDText + "', 'rank':'" + tweet.rank + "'}", function(err) {
 		if (err) {
-			return console.log('Error on write: ', err.message);
+			return logger.log('error', 'Error on write: ', err.message);
 		}
 		if (!tweet.isSpecial) {
 			if (tweet.fresh) {
-				console.log("Attente de 2,5 s - " + process.pid);
+				logger.log('debug', 'Attente de 2,5 s - ' + process.pid);
 				setTimeout(function() {
 					Sound.playSound(tweet.sound);
 					setTimeout(function() {
-						console.log("LYNCHMANIAC Le tweet frais est fini d'afficher par l'arduino !");
+						logger.log('info', "Le nouveau tweet vient de finir de s'afficher sur l'arduino !");
 						Arduino.process.send({action: Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
 					}, 7500);
 				}, 2500);
 
 			} else {
 				setTimeout(function() {
-					console.log("LYNCHMANIAC Le tweet historique est fini d'afficher par l'arduino !");
+					logger.log('debug', "Le tweet historique vient de finir de s'afficher sur l'arduino !");
 					Arduino.process.send({action: Configuration.processConst.ACTION.END_SHOW_TWEET_ON_ARDUINO, tweet: tweet});
 				}, 10000);
 			}
@@ -95,13 +95,5 @@ function writeDataOnArduinoSerial(tweet) {
 	});
 }
 
-/*Arduino.writeInitMessage = function() {
-	console.log(Utils.TEXT_LEA_PAUSE);
-    arduinoPort.write("{ 'motion': 'Null', tweet:'" + Utils.TEXT_LEA_PAUSE +"', 'rank':'0'}", function(err) {
-        if (err) {
-            return console.log('Error on write: ', err.message);
-        }
-    });
-}*/
 
 module.exports = Arduino;

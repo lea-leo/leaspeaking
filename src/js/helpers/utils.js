@@ -1,12 +1,9 @@
 "use strict";
+
 // lodash
 import _ from 'lodash/array';
 import fs from 'fs';
-//let _ = require('lodash/array');
-
-//let fs = require('fs');
-
-
+import logger from "../helpers/log";
 
 // Le modèle Tweet
 import Tweet from "../models/tweet";
@@ -107,7 +104,7 @@ export default class Utils {
                 config.push(tweet);
             }
             var configJSON = JSON.stringify(config);
-            console.log("Sauvegarde du tweet courant");
+            logger.log('info', 'Sauvegarde du tweet courant');
             fs.writeFileSync(Configuration.TWEETS_DB, configJSON);
         }
     }
@@ -126,7 +123,7 @@ export default class Utils {
             try {
                 fs.writeFileSync(Configuration.RANK_FILE, context.rank, {"encoding": 'utf8'});
             } catch (err) {
-                console.log(err);
+                logger.log('error', err);
             }
         }
     }
@@ -155,12 +152,12 @@ export default class Utils {
         if (Utils.isAdmin(tweet.screenName)) {
             console.log("Je suis un admin");
             if (tweet.text.startsWith(Configuration.TWEET_LEA_STOP)) {
-                console.log("tweet de stop");
+                logger.log('debug', 'tweet de stop');
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = false;
                 clusterArduino.send(Utils.generatePauseTweet());
             } else  if (tweet.text.startsWith(Configuration.TWEET_LEA_START)) {
-                console.log("tweet de start");
+                logger.log('debug', 'tweet de start');
                 tweet.isSpecial = true;
                 context.isLeaSpeaking = true;
                 Sound.playSound("bienvenue");
@@ -185,7 +182,7 @@ export default class Utils {
      * @returns {Tweet}
      */
     static generatePauseTweet() {
-        console.log("Je génére un tweet de pause");
+        logger.log('debug', 'Je génére un tweet de pause');
         return Utils.generateTweet(Configuration.TEXT_LEA_PAUSE);
     }
 
@@ -194,6 +191,7 @@ export default class Utils {
      * @returns {Tweet}
      */
     static generateStartUpTweet() {
+        logger.log('debug', 'Je génére un tweet d\'initialisation');
         return Utils.generateTweet(Configuration.TEXT_LEA_START_UP);
     }
 
@@ -202,6 +200,7 @@ export default class Utils {
      * @returns {Tweet}
      */
     static generateStartTweet() {
+        logger.log('debug', 'Je génére un tweet de démarrage');
         return Utils.generateTweet(Configuration.TEXT_LEA_START);
     }
 };
