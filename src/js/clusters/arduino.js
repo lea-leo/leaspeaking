@@ -45,8 +45,7 @@ Arduino.messageHandler = function(msg) {
 function getCurrentPort(msg) {
 	SerialPort.list(function(err, result) {
 		result.filter(function(val) {
-			if (val.manufacturer.toLowerCase().startsWith("arduino")) {
-			//if (val.manufacturer == "Arduino_LLC" || val.manufacturer == "Arduino__www.arduino.cc_") {
+			if (val.manufacturer && val.manufacturer.toLowerCase().startsWith("arduino")) {
 				arduinoPortName = val.comName;
 				arduinoPort = new SerialPort(arduinoPortName);
 				arduinoPort.on('open', function() {
@@ -56,6 +55,8 @@ function getCurrentPort(msg) {
 				arduinoPort.on('error', function(err) {
 					console.log('Error: ', err.message);
 				});
+			} else {
+				console.log('Impossible de trouver un arduino connecté....')
 			}
 		});
 	});
