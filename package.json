@@ -6,27 +6,31 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.13.4",
-    "fs": "0.0.2",
     "lame": "^1.2.4",
     "node-gyp": "^3.4.0",
-    "path": "^0.12.7",
     "python-shell": "^0.4.0",
     "recluster": "^0.4.5",
     "serialport": "^4.0.3",
     "speaker": "^0.3.0",
-    "tslint": "^3.15.1",
+    "stream-player": "^0.3.0",
     "twitter": "^1.3.0"
   },
   "devDependencies": {
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-register": "^6.18.0",
+    "clean-webpack-plugin": "^0.1.15",
     "jasmine": "^2.5.2",
     "joobster": "0.0.7",
     "lodash": "^4.16.6",
-    "supertest": "1.1.0"
+    "supertest": "1.1.0",
+    "webpack": "^2.2.0-rc.3"
   },
   "scripts": {
     "test": "istanbul cover babel-node node_modules/.bin/jasmine",
-    "prestart": "pulseaudio -D",
-    "start": "jsr compile:js && node ./dist/js/app",
-    "garbage": "jsr compile:js && node ./dist/js/garbage"
+    "start": "webpack --display-error-details && node ./dist/app",
+    "build": "webpack --display-error-details",
+    "garbage": "jsr compile:js && node ./dist/js/garbage",
+    "stats": "webpack --env production --profile --json > stats.json"
   }
 }
