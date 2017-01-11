@@ -1,4 +1,4 @@
-import Twitter from "twitter";
+import TwitterAPI from "twitter";
 
 import Tweet from "../models/tweet";
 import Configuration from "../config/configuration";
@@ -23,7 +23,7 @@ function Twitter () {
  */
 Twitter.streamTwitter = function() {
 
- 	client = new Twitter({
+ 	client = new TwitterAPI({
 	 "consumer_key": process.env.TWITTER_CONSUMER_KEY,
 	 "consumer_secret": process.env.TWITTER_CONSUMER_SECRET,
 	 "access_token_key": process.env.TWITTER_ACCESS_TOKEN_KEY,
