@@ -41,40 +41,4 @@ describe("renvoie le nom du fichier son à lancer", function() {
         expect(result).toBe("TUAlternatifMp3");
     });
 
-    it("test", function() {
-        var winston = require('winston');
-        var logger = new (winston.Logger)({
-            transports: [
-            new (winston.transports.Console)(),
-            new (winston.transports.File)({ filename: 'somefile.log' })
-            ]
-        });
-logger.log("info", "File: was found");
-    
-        logger.log('info', 'Hello distributed log files!');
-        logger.info('Hello again distributed logs');
-
-        logger.level = 'debug';
-        logger.log('debug', 'Now my debug messages are written to console!');
-    });
 });
-
-/*
-
-    static playSound(file) {
-        fs.createReadStream('sounds/' + file + '.mp3')
-            .pipe(new lame.Decoder())
-            .on('format', function (format) {
-                this.pipe(new Speaker(format));
-            });
-    }
-
-    static playSong(song){
-        var player = new StreamPlayer();
-
-        // Ajout de la chanson à jouer
-        player.add(song);
-        // début de la lecture
-        player.play();
-    }*/
-
