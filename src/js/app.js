@@ -1,20 +1,20 @@
     "use strict";
 
-    var cluster = require('cluster');
+    import cluster from 'cluster';
 
     import Tweet from "./models/tweet";
     import Configuration from "./config/configuration";
     import Context from "./models/context";
 
-    var Arduino = require("./clusters/arduino");
-    var Twitter = require("./clusters/twitter");
+    import Arduino from "./clusters/arduino";
+    import Twitter from "./clusters/twitter";
 
     import Utils from "./helpers/utils";
     import logger from "./helpers/log";
 
 
     // lodash
-    var _ = require('lodash/array');
+    import _ from 'lodash/array';
 
     /*
      * Les clusters Node
