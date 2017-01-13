@@ -13,7 +13,8 @@
     "serialport": "^4.0.3",
     "speaker": "^0.3.0",
     "stream-player": "^0.3.0",
-    "twitter": "^1.3.0"
+    "twitter": "^1.3.0",
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "babel-loader": "^6.2.10",
