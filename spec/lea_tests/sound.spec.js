@@ -1,15 +1,15 @@
-import Sound from "../../dist/js/helpers/sound";
-import Utils from "../../dist/js/helpers/utils";
-import Tweet from "../../dist/js/models/tweet";
-import Configuration from "../../dist/js/config/configuration";
-import Context from "../../dist/js/models/context";
+import Sound from "../../src/js/helpers/sound";
+import Utils from "../../src/js/helpers/utils";
+import Tweet from "../../src/js/models/tweet";
+import Configuration from "../../src/js/config/configuration";
+import Context from "../../src/js/models/context";
 
 import fs from 'fs';
 
 // Test chooseSound function
 describe("renvoie le nom du fichier son à lancer", function() {
 
-    
+
     it("Devrait retourner un son aléatoire", function() {
         let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
         Configuration.sounds.push({text: "TU", alternativeText: Configuration.USER_TWITTER + " TU", mp3: "Mp3TUFile"});

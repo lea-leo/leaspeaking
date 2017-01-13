@@ -1,7 +1,7 @@
-import Utils from "../../dist/js/helpers/utils";
-import Tweet from "../../dist/js/models/tweet";
-import Configuration from "../../dist/js/config/configuration";
-import Context from "../../dist/js/models/context";
+import Utils from "../../src/js/helpers/utils";
+import Tweet from "../../src/js/models/tweet";
+import Configuration from "../../src/js/config/configuration";
+import Context from "../../src/js/models/context";
 
 import fs from 'fs';
 
@@ -11,7 +11,7 @@ import fs from 'fs';
 
 // Test getRandomMotion function
 describe("renvoie un mouvement aléatoire", function() {
-    
+
     it("Devrait renvoyer le premier mouvement", function() {
         spyOn(Utils, 'getRandomInt').and.returnValue(0);
         expect(Utils.getRandomMotion("colle")).toBe(Configuration.CLASSIC_MOTIONS[0]);
@@ -63,7 +63,7 @@ describe("renvoie la valeur du rang du tweet", function() {
 // Test fillTweetRank function
 describe("renseigne le rang du tweet avec la valeur courante", function() {
 
-    
+
     it("Devrait renseigner la bonne valeur du rang", function() {
         let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
         expect(tweet.rank).not.toBe(undefined);
@@ -159,7 +159,7 @@ describe("indique si le tweet reçu est gagnant", function() {
         expect(result.motion).toBe("WINNER");
         expect(result.sound).toBe("gagnant_Dora");
      });
-    
+
     it("Ne devrait pas être un tweet gagnant avec une config KO", function() {
         context.rank = 5;
         context.gamification = null;
@@ -214,16 +214,16 @@ describe("sauvegarde le tweet passé en paramètre", function() {
         Utils.saveTweet(tweet);
         var configFile = fs.readFileSync(Configuration.TWEETS_DB);
         var config = JSON.parse(configFile);
- 
+
         expect(config.length).toBe(0);
      });
 });
 
 // Test updateAndSaveRankTweet function
 describe("incrémente et sauvegarde le rang courant du nombre de tweet", function() {
-    
+
     let context = new Context();
-    
+
     // Create rank database
     beforeEach(function() {
         Configuration.RANK_FILE = 'rank-test.txt';
