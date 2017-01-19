@@ -1,6 +1,6 @@
 {
   "name": "leaspeaking",
-  "version": "0.22.0",
+  "version": "0.2.0",
   "description": "tweets for lea",
   "author": "Lynchmaniac <lynchmaniac@gmail.com> (lynchmaniac.fr)",
   "license": "MIT",
@@ -24,10 +24,10 @@
     "clean-webpack-plugin": "^0.1.15",
     "jasmine": "^2.5.2",
     "jasmine-spec-reporter": "^3.0.0",
-    "joobster": "0.0.7",
+    "json-loader": "^0.5.4",
     "lodash": "^4.16.6",
     "supertest": "1.1.0",
-    "webpack": "^2.2.0-rc.3"
+    "webpack": "^2.2.0"
   },
   "scripts": {
     "test": "babel-node spec/jasmine-runner",
