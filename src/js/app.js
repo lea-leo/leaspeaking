@@ -1,5 +1,3 @@
-"use strict";
-
 import cluster from 'cluster';
 
 import Tweet from "./models/tweet";
@@ -14,6 +12,8 @@ import logger from "./helpers/log";
 
 // lodash
 import _ from 'lodash/array';
+
+// import { gamification } from 'Config';
 
 /*
  * Les clusters Node
@@ -59,13 +59,13 @@ if (cluster.isMaster) {
   Utils.getCurrentRank(context);
 
   // Fork workers.
-  clusterTwitter = cluster.fork({type: Configuration.processConst.TYPE.CLUSTER_TWITTER});
+  clusterTwitter = cluster.fork({ type: Configuration.processConst.TYPE.CLUSTER_TWITTER });
 
   // Fork workers.
-  clusterArduino = cluster.fork({type: Configuration.processConst.TYPE.CLUSTER_ARDUINO});
+  clusterArduino = cluster.fork({ type: Configuration.processConst.TYPE.CLUSTER_ARDUINO });
 
   // Ajout du handler message pour le cluster Twitter
-  clusterTwitter.on('message', function(msg) {
+  clusterTwitter.on('message', function (msg) {
     let tweet = msg.tweet;
 
     if (msg.action == Configuration.processConst.ACTION.SHOW_TWEET) {
@@ -91,7 +91,7 @@ if (cluster.isMaster) {
           gamificationLevel = Utils.isTweetWinner(context.gamification, context.rank);
         }
         if (gamificationLevel != null && tweet.fresh) {
-          clusterTwitter.send({action: Configuration.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: context.rank});
+          clusterTwitter.send({ action: Configuration.processConst.ACTION.SEND_TWEET, winner: tweet.screenName, rank: context.rank });
           tweet.motion = gamificationLevel.motion;
           tweet.sound = gamificationLevel.sound;
           tweet.winner = true;
@@ -112,7 +112,7 @@ if (cluster.isMaster) {
   });
 
   // Ajout du handler message pour le cluster Arduino
-  clusterArduino.on('message', function(msg) {
+  clusterArduino.on('message', function (msg) {
     context.isTweetDisplayed = false;
     let tweet = msg.tweet;
     if (context.isLeaSpeaking) {
@@ -129,7 +129,7 @@ if (cluster.isMaster) {
         }
         // Suppression du tweet frais
         _
-          .remove(context.freshTweets, function(currentObject) {
+          .remove(context.freshTweets, function (currentObject) {
             return currentObject.userName === tweet.userName && currentObject.screenName === tweet.screenName && currentObject.text === tweet.text;
           });
       }
@@ -164,15 +164,15 @@ if (cluster.isMaster) {
 
   // Quand le worker arduino est opérationnel, nous affichons le tweet de bienvenue ainsi que
   // l'accompagnement vocal
-  clusterArduino.on('online', function(worker) {
+  clusterArduino.on('online', function (worker) {
     clusterArduino.send(Utils.generateStartUpTweet());
   });
 
   // Temps de latence pour permettre l'initialisation des workers avant de lancer l'API streaming
   // Twitter
-  setTimeout(function() {
+  setTimeout(function () {
     logger.log('info', 'Twitter est sur écoute ...');
-    clusterTwitter.send({action: Configuration.processConst.ACTION.LISTEN_TWEET});
+    clusterTwitter.send({ action: Configuration.processConst.ACTION.LISTEN_TWEET });
   }, 1000);
 
 }

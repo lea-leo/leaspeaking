@@ -1,8 +1,8 @@
-import {chooseSound} from "../../src/js/helpers/sound";
-import * as Utils from "../../src/js/helpers/utils";
-import Tweet from "../../src/js/models/tweet";
-import Configuration from "../../src/js/config/configuration";
-import Context from "../../src/js/models/context";
+import {chooseSound} from "../../../src/js/helpers/sound";
+import * as Utils from "../../../src/js/helpers/utils";
+import Tweet from "../../../src/js/models/tweet";
+import Configuration from "../../../src/js/config/configuration";
+import Context from "../../../src/js/models/context";
 
 import fs from 'fs';
 

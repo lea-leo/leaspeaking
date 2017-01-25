@@ -9,7 +9,9 @@ import logger from "../helpers/log";
 import Tweet from "../models/tweet";
 
 import Configuration from "../config/configuration";
-import {playSound} from './sound';
+import { playSound } from './sound';
+
+import { gamification } from '../../../config';
 
 /**
  * Renvoie un nombre aléatoire compris entre le min et le max.
@@ -27,7 +29,7 @@ export const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min 
 export const getRandomMotion = (sound) => {
   let result = Configuration
     .easterEggs
-    .find(function(easterEgg) {
+    .find(function (easterEgg) {
       return sound == easterEgg.mp3;
     });
 
@@ -68,7 +70,7 @@ export const fillTweetRank = (tweet, rank) => {
 /**
  * Renvoie les paliers gagnants.
  */
-export const getGamification = () => JSON.parse(fs.readFileSync(Configuration.GAMIFICATION_FILE, "utf8"));
+export const getGamification = () => gamification;
 
 /**
  * Indique si le tweet courant est gagnant en atteignant un palier
@@ -96,7 +98,7 @@ export const saveTweet = (tweet) => {
   if (tweet.fresh) {
     let configFile = fs.readFileSync(Configuration.TWEETS_DB);
     let config = JSON.parse(configFile);
-    if (_.findIndex(config, function(o) {
+    if (_.findIndex(config, function (o) {
       return o == tweet;
     }) == -1) {
       config.push(tweet);
@@ -118,7 +120,7 @@ export const updateAndSaveRankTweet = (tweet, context) => {
     let result = parseInt(context.rank) + 1;
     context.rank = result;
     try {
-      fs.writeFileSync(Configuration.RANK_FILE, context.rank, {"encoding": 'utf8'});
+      fs.writeFileSync(Configuration.RANK_FILE, context.rank, { "encoding": 'utf8' });
     } catch (err) {
       logger.log('error', err);
     }

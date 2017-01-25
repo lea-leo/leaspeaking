@@ -1,7 +1,7 @@
-import * as Utils from "../../src/js/helpers/utils";
-import Tweet from "../../src/js/models/tweet";
-import Configuration from "../../src/js/config/configuration";
-import Context from "../../src/js/models/context";
+import * as Utils from "../../../src/js/helpers/utils";
+import Tweet from "../../../src/js/models/tweet";
+import Configuration from "../../../src/js/config/configuration";
+import Context from "../../../src/js/models/context";
 
 import fs from 'fs';
 
@@ -10,9 +10,9 @@ import fs from 'fs';
 */
 
 // Test getRandomMotion function
-describe("renvoie un mouvement aléatoire", function() {
+describe("renvoie un mouvement aléatoire", function () {
 
-  it("Devrait renvoyer le premier mouvement", function() {
+  it("Devrait renvoyer le premier mouvement", function () {
     spyOn(Math, 'random')
       .and
       .returnValue(0);
@@ -21,7 +21,7 @@ describe("renvoie un mouvement aléatoire", function() {
     expect(Utils.getRandomMotion("lot2")).toBe(Configuration.CLASSIC_MOTIONS[0]);
   });
 
-  it("Devrait renvoyer le second mouvement", function() {
+  it("Devrait renvoyer le second mouvement", function () {
     spyOn(Math, 'random')
       .and
       .returnValue(0.5);
@@ -30,7 +30,7 @@ describe("renvoie un mouvement aléatoire", function() {
     expect(Utils.getRandomMotion("lot1")).toBe(Configuration.CLASSIC_MOTIONS[1]);
   });
 
-  it("Devrait renvoyer un easter egg", function() {
+  it("Devrait renvoyer un easter egg", function () {
     spyOn(Math, 'random')
       .and
       .returnValue(0);
@@ -40,12 +40,12 @@ describe("renvoie un mouvement aléatoire", function() {
 });
 
 // Test getCurrentRank function
-describe("renvoie la valeur du rang du tweet", function() {
+describe("renvoie la valeur du rang du tweet", function () {
 
   let context = new Context();
 
   // Create rank database
-  beforeEach(function() {
+  beforeEach(function () {
     Configuration.RANK_FILE = 'rank-test.txt';
     if (fs.existsSync(Configuration.RANK_FILE)) {
       fs.unlinkSync(Configuration.RANK_FILE);
@@ -54,11 +54,11 @@ describe("renvoie la valeur du rang du tweet", function() {
   });
 
   // Suppress rank database
-  afterEach(function() {
+  afterEach(function () {
     fs.unlinkSync(Configuration.RANK_FILE);
   });
 
-  it("Devrait renvoyer la valeur correcte du rang", function() {
+  it("Devrait renvoyer la valeur correcte du rang", function () {
     expect(context.rank).toBe(undefined);
     Utils.getCurrentRank(context);
     expect(context.rank).toEqual(jasmine.any(String));
@@ -67,9 +67,9 @@ describe("renvoie la valeur du rang du tweet", function() {
 });
 
 // Test fillTweetRank function
-describe("renseigne le rang du tweet avec la valeur courante", function() {
+describe("renseigne le rang du tweet avec la valeur courante", function () {
 
-  it("Devrait renseigner la bonne valeur du rang", function() {
+  it("Devrait renseigner la bonne valeur du rang", function () {
     let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
     expect(tweet.rank)
       .not
@@ -84,7 +84,7 @@ describe("renseigne le rang du tweet avec la valeur courante", function() {
     expect(tweet.rank).toBe(22);
   });
 
-  it("Ne devrait pas renseigner la bonne valeur du rang (admin)", function() {
+  it("Ne devrait pas renseigner la bonne valeur du rang (admin)", function () {
     let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
     expect(tweet.rank)
       .not
@@ -102,72 +102,32 @@ describe("renseigne le rang du tweet avec la valeur courante", function() {
 
 });
 
-// Test getGamification function
-describe("alimente le tableau de gamification", function() {
-
-  let context = new Context();
-
-  // Create gamification database
-  beforeEach(function() {
-    Configuration.GAMIFICATION_FILE = 'gamification-test.json';
-    if (fs.existsSync(Configuration.GAMIFICATION_FILE)) {
-      fs.unlinkSync(Configuration.GAMIFICATION_FILE);
-    }
-    fs.writeFileSync(Configuration.GAMIFICATION_FILE, '{"level_1":{ "rank": 5, "motion": "WINNER", "sound": "gagnant_Dora"}}');
-  });
-
-  // Suppress gamification database
-  afterEach(function() {
-    fs.unlinkSync(Configuration.GAMIFICATION_FILE);
-  });
-
-  it("Ne devrait pas être une config null", function() {
-    let result = Utils.getGamification();
-    expect(result)
-      .not
-      .toBe(null);
-  });
-
-  it("Devrait être une configuration correctement renseignée", function() {
-    let result = Utils.getGamification();
-    expect(result['level_1'])
-      .not
-      .toBe(null);
-    expect(result['level_1'].rank).toEqual(jasmine.any(Number));
-    expect(result['level_1'].rank).toBe(5);
-    expect(result['level_1'].motion).toBe("WINNER");
-    expect(result['level_1'].sound).toBe("gagnant_Dora");
-  });
-
-});
-
 // Test isTweetWinner function
-describe("indique si le tweet reçu est gagnant", function() {
+describe("indique si le tweet reçu est gagnant", function () {
 
   let context = new Context();
 
   // Create gamification database
-  beforeEach(function() {
-    Configuration.GAMIFICATION_FILE = 'gamification-test.json';
-    if (fs.existsSync(Configuration.GAMIFICATION_FILE)) {
-      fs.unlinkSync(Configuration.GAMIFICATION_FILE);
-    }
-    fs.writeFileSync(Configuration.GAMIFICATION_FILE, '{"level_1":{ "rank": 5, "motion": "WINNER", "sound": "gagnant_Dora"}}');
-    context.gamification = JSON.parse(fs.readFileSync(Configuration.GAMIFICATION_FILE, "utf8"));
+  beforeEach(function () {
+    spyOn(Utils, 'getGamification')
+      .and
+      .returnValue({
+        "level_1": {
+          "rank": 5,
+          "motion": "WINNER",
+          "sound": "gagnant_Dora"
+        }
+      });
+    context.gamification = Utils.getGamification();
   });
 
-  // Suppress gamification database
-  afterEach(function() {
-    fs.unlinkSync(Configuration.GAMIFICATION_FILE);
-  });
-
-  it("Ne devrait pas être un tweet gagnant", function() {
+  it("Ne devrait pas être un tweet gagnant", function () {
     context.rank = 0;
     let result = Utils.isTweetWinner(context.gamification, context.rank);
     expect(result).toBe(null);
   });
 
-  it("Devrait être un tweet gagnant", function() {
+  it("Devrait être un tweet gagnant", function () {
     context.rank = 5;
     let result = Utils.isTweetWinner(context.gamification, context.rank);
     expect(result)
@@ -179,7 +139,7 @@ describe("indique si le tweet reçu est gagnant", function() {
     expect(result.sound).toBe("gagnant_Dora");
   });
 
-  it("Ne devrait pas être un tweet gagnant avec une config KO", function() {
+  it("Ne devrait pas être un tweet gagnant avec une config KO", function () {
     context.rank = 5;
     context.gamification = null;
     let result = Utils.isTweetWinner(context.gamification, context.rank);
@@ -189,12 +149,12 @@ describe("indique si le tweet reçu est gagnant", function() {
 });
 
 // Test saveTweet function
-describe("sauvegarde le tweet passé en paramètre", function() {
+describe("sauvegarde le tweet passé en paramètre", function () {
 
   let tweet = new Tweet("UserName", "ScreenName", "TweetText");
 
   // Create tweets database
-  beforeEach(function() {
+  beforeEach(function () {
     Configuration.TWEETS_DB = 'tweets-test.json';
     if (fs.existsSync(Configuration.TWEETS_DB)) {
       fs.unlinkSync(Configuration.TWEETS_DB);
@@ -203,11 +163,11 @@ describe("sauvegarde le tweet passé en paramètre", function() {
   });
 
   // Suppress tweets database
-  afterEach(function() {
+  afterEach(function () {
     fs.unlinkSync(Configuration.TWEETS_DB);
   });
 
-  it("Devrait enregistrer le tweet passé en paramètre", function() {
+  it("Devrait enregistrer le tweet passé en paramètre", function () {
     Utils.saveTweet(tweet);
     var configFile = fs.readFileSync(Configuration.TWEETS_DB);
     var config = JSON.parse(configFile);
@@ -228,7 +188,7 @@ describe("sauvegarde le tweet passé en paramètre", function() {
 
   });
 
-  it("Ne devrait pas enregistrer le tweet passé en paramètre", function() {
+  it("Ne devrait pas enregistrer le tweet passé en paramètre", function () {
     tweet.fresh = false;
     Utils.saveTweet(tweet);
     var configFile = fs.readFileSync(Configuration.TWEETS_DB);
@@ -239,12 +199,12 @@ describe("sauvegarde le tweet passé en paramètre", function() {
 });
 
 // Test updateAndSaveRankTweet function
-describe("incrémente et sauvegarde le rang courant du nombre de tweet", function() {
+describe("incrémente et sauvegarde le rang courant du nombre de tweet", function () {
 
   let context = new Context();
 
   // Create rank database
-  beforeEach(function() {
+  beforeEach(function () {
     Configuration.RANK_FILE = 'rank-test.txt';
     if (fs.existsSync(Configuration.RANK_FILE)) {
       fs.unlinkSync(Configuration.RANK_FILE);
@@ -254,11 +214,11 @@ describe("incrémente et sauvegarde le rang courant du nombre de tweet", functio
   });
 
   // Suppress rank database
-  afterEach(function() {
+  afterEach(function () {
     fs.unlinkSync(Configuration.RANK_FILE);
   });
 
-  it("Devrait incrémenter le compteur", function() {
+  it("Devrait incrémenter le compteur", function () {
     let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
     Utils.updateAndSaveRankTweet(tweet, context);
     var rank = JSON.parse(fs.readFileSync(Configuration.RANK_FILE));
@@ -268,7 +228,7 @@ describe("incrémente et sauvegarde le rang courant du nombre de tweet", functio
     expect(rank).toEqual(23);
   });
 
-  it("Ne devrait pas incrémenter le compteur pour un utilisateur admin", function() {
+  it("Ne devrait pas incrémenter le compteur pour un utilisateur admin", function () {
     let tweet = new Tweet("UserName", "lynchmaniacPL", "coucou le monde");
     Utils.updateAndSaveRankTweet(tweet, context);
     var rank = JSON.parse(fs.readFileSync(Configuration.RANK_FILE));
@@ -278,7 +238,7 @@ describe("incrémente et sauvegarde le rang courant du nombre de tweet", functio
     expect(rank).toBe(2);
   });
 
-  it("Ne devrait pas incrémenter le compteur pour un vieux tweet", function() {
+  it("Ne devrait pas incrémenter le compteur pour un vieux tweet", function () {
     let tweet = new Tweet("UserName", "ScreenName", "coucou le monde");
     tweet.fresh = false;
     Utils.updateAndSaveRankTweet(tweet, context);
@@ -291,101 +251,101 @@ describe("incrémente et sauvegarde le rang courant du nombre de tweet", functio
 });
 
 // Test isAdim function
-describe("indique si l'utilisateur qui a tweeter est un administrateur", function() {
-  it("Devrait répondre faux pour un utilisateur lambda", function() {
+describe("indique si l'utilisateur qui a tweeter est un administrateur", function () {
+  it("Devrait répondre faux pour un utilisateur lambda", function () {
     expect(Utils.isAdmin("name")).toBe(false);
   });
-  it("Devrait répondre vrai pour un utilisateur admin", function() {
+  it("Devrait répondre vrai pour un utilisateur admin", function () {
     expect(Utils.isAdmin("lynchmaniacPL")).toBe(true);
   });
-  it("Devrait répondre vrai pour un utilisateur admin (case insensitive)", function() {
+  it("Devrait répondre vrai pour un utilisateur admin (case insensitive)", function () {
     expect(Utils.isAdmin("LYNCHMANIACPL")).toBe(true);
   });
 });
 
 // Test isDemoOff function
-describe("indique si le tweet met le mode demo en pause", function() {
+describe("indique si le tweet met le mode demo en pause", function () {
 
   let tweet = new Tweet("UserName", "ScreenName", "demo off");
 
-  it("Devrait répondre positivement au fait de mettre le mode démo en pause (texte seul)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en pause (texte seul)", function () {
     expect(Utils.isDemoOff(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec préfixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec préfixe)", function () {
     tweet.text = "avec du texte avant demo off";
     expect(Utils.isDemoOff(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec suffixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec suffixe)", function () {
     tweet.text = "demo off avec du texte après";
     expect(Utils.isDemoOff(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec suffixe et prefixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en pause (avec suffixe et prefixe)", function () {
     tweet.text = "avec du texte avant demo off avec du texte après";
     expect(Utils.isDemoOff(tweet)).toBe(true);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte)", function () {
     tweet.text = "dema off";
     expect(Utils.isDemoOff(tweet)).toBe(false);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte avec préfixe)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte avec préfixe)", function () {
     tweet.text = "avec du texte avant dema off";
     expect(Utils.isDemoOff(tweet)).toBe(false);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte avec suffixe)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte avec suffixe)", function () {
     tweet.text = "dema off avec du texte après";
     expect(Utils.isDemoOff(tweet)).toBe(false);
   });
   it("Devrait répondre négativement au fait de mettre le mode démo en pause (mauvais texte avec suffixe et" +
-      " prefixe)",
-  function() {
-    tweet.text = "avec du texte avant dema off avec du texte après";
-    expect(Utils.isDemoOff(tweet)).toBe(false);
-  });
+    " prefixe)",
+    function () {
+      tweet.text = "avec du texte avant dema off avec du texte après";
+      expect(Utils.isDemoOff(tweet)).toBe(false);
+    });
 });
 
 // Test isDemoOn function
-describe("indique si le tweet met le mode demo en action", function() {
+describe("indique si le tweet met le mode demo en action", function () {
 
   let tweet = new Tweet("UserName", "ScreenName", "demo on");
 
-  it("Devrait répondre positivement au fait de mettre le mode démo en action (texte seul)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en action (texte seul)", function () {
     expect(Utils.isDemoOn(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec préfixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec préfixe)", function () {
     tweet.text = "avec du texte avant demo on";
     expect(Utils.isDemoOn(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec suffixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec suffixe)", function () {
     tweet.text = "demo on avec du texte après";
     expect(Utils.isDemoOn(tweet)).toBe(true);
   });
-  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec suffixe et prefixe)", function() {
+  it("Devrait répondre positivement au fait de mettre le mode démo en action (avec suffixe et prefixe)", function () {
     tweet.text = "avec du texte avant demo on avec du texte après";
     expect(Utils.isDemoOn(tweet)).toBe(true);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte)", function () {
     tweet.text = "dema on";
     expect(Utils.isDemoOn(tweet)).toBe(false);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte avec préfixe)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte avec préfixe)", function () {
     tweet.text = "avec du texte avant dema on";
     expect(Utils.isDemoOn(tweet)).toBe(false);
   });
-  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte avec suffixe)", function() {
+  it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte avec suffixe)", function () {
     tweet.text = "dema on avec du texte après";
     expect(Utils.isDemoOn(tweet)).toBe(false);
   });
   it("Devrait répondre négativement au fait de mettre le mode démo en action (mauvais texte avec suffixe e" +
-      "t prefixe)",
-  function() {
-    tweet.text = "avec du texte avant dema on avec du texte après";
-    expect(Utils.isDemoOn(tweet)).toBe(false);
-  });
+    "t prefixe)",
+    function () {
+      tweet.text = "avec du texte avant dema on avec du texte après";
+      expect(Utils.isDemoOn(tweet)).toBe(false);
+    });
 });
 
 // Test generateTweet function
-describe("génére un squelette de tweet", function() {
-  it("contenant les informations essentielles", function() {
+describe("génére un squelette de tweet", function () {
+  it("contenant les informations essentielles", function () {
     var tweet = Utils.generateTweet("Hello World !!!");
     expect(tweet)
       .not
@@ -414,8 +374,8 @@ describe("génére un squelette de tweet", function() {
 });
 
 // Test generatePauseTweet function
-describe("génére un tweet de pause", function() {
-  it("contenant les informations essentielles", function() {
+describe("génére un tweet de pause", function () {
+  it("contenant les informations essentielles", function () {
     var tweet = Utils.generatePauseTweet();
     expect(tweet)
       .not
@@ -445,8 +405,8 @@ describe("génére un tweet de pause", function() {
 });
 
 // Test generateStartUpTweet function
-describe("génére un tweet d'initialisation'", function() {
-  it("contenant les informations essentielles", function() {
+describe("génére un tweet d'initialisation'", function () {
+  it("contenant les informations essentielles", function () {
     var tweet = Utils.generateStartUpTweet();
     expect(tweet)
       .not
@@ -476,8 +436,8 @@ describe("génére un tweet d'initialisation'", function() {
 });
 
 // Test generateStartTweet function
-describe("génére un tweet de démarrage", function() {
-  it("contenant les informations essentielles", function() {
+describe("génére un tweet de démarrage", function () {
+  it("contenant les informations essentielles", function () {
     var tweet = Utils.generateStartTweet();
     expect(tweet)
       .not
