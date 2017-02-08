@@ -12,7 +12,7 @@ import fs from 'fs';
 // Test getRandomMotion function
 describe("renvoie un mouvement aléatoire", function () {
 
-  it("Devrait renvoyer le premier mouvement", function () {
+  it("Devrait renvoyer le premier mouvement", function() {
     spyOn(Math, 'random')
       .and
       .returnValue(0);

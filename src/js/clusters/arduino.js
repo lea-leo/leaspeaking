@@ -1,6 +1,6 @@
 import SerialPort from 'serialport';
 
-import {playSound} from "../helpers/sound";
+import { playSound } from "../helpers/sound";
 import Configuration from "../config/configuration";
 import logger from "../helpers/log";
 
@@ -12,7 +12,9 @@ var arduinoPort;
  * Consdtructeur.
  * @constructor
  */
-function Arduino() {}
+function Arduino () {
+
+}
 
 /**
  * Message handler pour la partie arduino
@@ -97,5 +99,4 @@ function writeDataOnArduinoSerial(tweet) {
 
   });
 }
-
 module.exports = Arduino;
