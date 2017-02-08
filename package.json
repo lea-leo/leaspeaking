@@ -30,7 +30,7 @@
     "webpack": "^2.2.0"
   },
   "scripts": {
-    "test": "babel-node spec/jasmine-runner",
+    "test": "webpack --display-error-details && babel-node spec/jasmine-runner",
     "start": "webpack --display-error-details && node ./dist/app",
     "build": "webpack --display-error-details",
     "stats": "webpack --env production --profile --json > stats.json"
