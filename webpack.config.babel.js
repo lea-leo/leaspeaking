@@ -2,8 +2,7 @@ import webpack from 'webpack';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import fs from 'fs';
 
-import { PATHS, gamification } from './config';
-import path from 'path';
+import { PATHS } from './config';
 
 let nodeModules = {};
 
@@ -11,19 +10,6 @@ fs
   .readdirSync('node_modules')
   .filter((x) => ['.bin'].indexOf(x) === -1)
   .forEach((mod) => nodeModules[mod] = 'commonjs ' + mod);
-
-let TARGET;
-switch (process.env.npm_lifecycle_event) {
-  case 'test':
-    TARGET = 'test'
-    break;
-  case 'build':
-  case 'stats':
-    TARGET = 'production'
-    break;
-  default:
-    TARGET = 'dev'
-}
 
 export default {
   entry: {
@@ -35,11 +21,6 @@ export default {
     filename: '[name].js'
   },
   externals: nodeModules,
-  resolve: {
-    alias: {
-      Config: path.resolve('./config')
-    }
-  },
   devtool: 'sourcemap',
   module: {
     rules: [
@@ -55,11 +36,6 @@ export default {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify(TARGET)
-      }
-    }),
     new CleanWebpackPlugin([PATHS.dist]),
     new webpack.BannerPlugin({
       banner: 'require("source-map-support").install();',
