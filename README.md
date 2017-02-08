@@ -84,5 +84,5 @@ Les fichiers de tests doivent avoirs l'extension .spec.js.
 Le lancement des tests se fait à l'aide de la commande
   
 ```javascript
-npm tests
+npm test
 ```
