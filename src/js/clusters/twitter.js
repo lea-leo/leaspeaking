@@ -27,10 +27,11 @@ Twitter.streamTwitter = function() {
     "access_token_key": process.env.TWITTER_ACCESS_TOKEN_KEY,
     "access_token_secret": process.env.TWITTER_ACCESS_TOKEN_SECRET
   });
-
+  logger.log('debug', "Création du client Twitter...");
   let stream = client.stream('statuses/filter', {track: 'devfest_lea'});
 
   stream.on('data', function(tweetReceived) {
+    logger.log('debug', "On a reçu un tweet");
     if (!tweetReceived.retweeted_status) {
 
       logger.log('debug', "isAdmin : " + isAdmin(tweetReceived.user.screen_name));
@@ -98,5 +99,4 @@ Twitter.sendTweet = function(winner) {
       logger.log('info', 'Un tweet gagnant a été envoyé');
     });
 };
-
 module.exports = Twitter;
