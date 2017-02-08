@@ -170,9 +170,13 @@ if (cluster.isMaster) {
 
   // Temps de latence pour permettre l'initialisation des workers avant de lancer l'API streaming
   // Twitter
-  setTimeout(function () {
+  clusterTwitter.on('online', function (worker) {
     logger.log('info', 'Twitter est sur écoute ...');
     clusterTwitter.send({ action: Configuration.processConst.ACTION.LISTEN_TWEET });
-  }, 1000);
+  });
+/*  setTimeout(function () {
+    logger.log('info', 'Twitter est sur écoute ...');
+    clusterTwitter.send({ action: Configuration.processConst.ACTION.LISTEN_TWEET });
+  }, 1000);*/
 
 }
