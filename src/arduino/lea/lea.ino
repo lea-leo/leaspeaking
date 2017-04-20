@@ -60,6 +60,10 @@ const String WINNER = "WINNER";
 const String WINNER_VOIX = "WINNER_VOIX";
 const String NO_MOTION = "NO_MOTION";
 
+const String MOVE_LEFT_ARM = "MOVE_LEFT_ARM";
+const String MOVE_RIGHT_ARM = "MOVE_RIGHT_ARM";
+const String MOVE_HEAD = "MOVE_HEAD";
+
 
 String motion = KUNG_FU_PANDA;
 String tweet = "";
@@ -213,6 +217,10 @@ void leaMove() {
     winner();
   } else if (motion == WINNER_VOIX) {
     winnerVoix();
+  } else if (motion == MOVE_LEFT_ARM) {
+    moveLeftArm();
+  } else if (motion == MOVE_RIGHT_ARM) {
+    
   }
   delay(100);
   digitalWrite(led, LOW);
@@ -260,9 +268,9 @@ void parseMessage(String message) {
   }
   
   // Fetch values.
-  motion = root["motion"].asString();
-  tweet = root["tweet"].asString();
-  rank = root["rank"].asString();
+  motion = root["motion"].as<char*>();
+  tweet = root["tweet"].as<char*>();
+  rank = root["rank"].as<char*>();
 }
 
 
@@ -511,6 +519,20 @@ void sos() {
     leftArm.write(LEFT_ARM_HIGH + 10);
     delay(100);
   }
+  detachServo();
+}
+
+/**
+ * Bouge le bras gauche
+ */
+void moveLeftArm() {
+  ledRVBpwm(0, 255,255);
+  attachServo();
+  
+  moveUpArmLeft(10);
+  delay(200);
+  moveDownArmRight(10);
+
   detachServo();
 }
 

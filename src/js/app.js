@@ -6,6 +6,7 @@ import Context from "./models/context";
 
 import Arduino from "./clusters/arduino";
 import Twitter from "./clusters/twitter";
+import Snowboy from "./clusters/snowboy";
 
 import * as Utils from "./helpers/utils";
 import logger from "./helpers/log";
@@ -20,6 +21,7 @@ import _ from 'lodash/array';
  */
 var clusterArduino;
 var clusterTwitter;
+var clusterSnowboy;
 
 /*
  * Le contexte d'exécution du master
@@ -42,6 +44,10 @@ if (cluster.isWorker) {
     logger.log('info', 'Création du cluster Arduino');
     Arduino.process = process;
     process.on('message', Arduino.messageHandler);
+  } else if (process.env['type'] == Configuration.processConst.TYPE.CLUSTER_SNOWBOY) {
+    logger.log('info', 'Création du cluster Snowboy');
+    Snowboy.process = process;
+    process.on('message', Snowboy.messageHandler);
   }
 }
 
@@ -64,6 +70,27 @@ if (cluster.isMaster) {
   // Fork workers.
   clusterArduino = cluster.fork({ type: Configuration.processConst.TYPE.CLUSTER_ARDUINO });
 
+  clusterSnowboy = cluster.fork({ type: Configuration.processConst.TYPE.CLUSTER_SNOWBOY });
+
+  clusterSnowboy.on('message', function (msg) {
+    /*if (msg.tweet.text === 'réveille toi léa') {
+      context.isLeaSpeaking = true;
+    } else if (msg.tweet.text === 'Au revoir Léa...') {
+      context.isLeaSpeaking = false;
+    }*/
+    console.log('context.isLeaSpeaking avant ' + context.isLeaSpeaking);
+    context.isLeaSpeaking = msg.isLeaSpeaking;
+    console.log('context.isLeaSpeaking après ' + context.isLeaSpeaking);
+    if (context.isLeaSpeaking) {
+      clusterArduino.send(msg.tweet);
+    }
+    /* else if(msg.tweet.text === 'Au revoir Léa...') {
+      console.log("Léa va maintenant s'endormir tranquillement...");
+    } else {
+      console.log('Léa est en train de dormir, merci de la reveiller doucement...')
+    }*/
+    
+  });
   // Ajout du handler message pour le cluster Twitter
   clusterTwitter.on('message', function (msg) {
     let tweet = msg.tweet;
@@ -123,9 +150,7 @@ if (cluster.isMaster) {
         if (tweet.fresh) {
           tweet.fresh = false;
           tweet.motion = null;
-          context
-            .historicTweets
-            .push(tweet);
+          context.historicTweets.push(tweet);
         }
         // Suppression du tweet frais
         _
@@ -146,9 +171,7 @@ if (cluster.isMaster) {
       if (!context.isTweetDisplayed) {
         // Si la liste des tweets historique est plus grande, le progamme la tronque
         if (context.historicTweets.length > 10) {
-          context.historicTweets = context
-            .historicTweets
-            .slice(0, 10);
+          context.historicTweets = context.historicTweets.slice(0, 10);
         }
 
         // Si il existe des tweets historique, le programme les affiche de manière aléatoire
@@ -167,7 +190,10 @@ if (cluster.isMaster) {
   clusterArduino.on('online', function (worker) {
     clusterArduino.send(Utils.generateStartUpTweet());
   });
-
+  clusterSnowboy.on('online', function (worker) {
+    console.log('worker snowboy online');
+    clusterSnowboy.send({ action: Configuration.processConst.ACTION.LISTEN_TWEET });
+  });
   // Temps de latence pour permettre l'initialisation des workers avant de lancer l'API streaming
   // Twitter
   clusterTwitter.on('online', function (worker) {

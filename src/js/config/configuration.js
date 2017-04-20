@@ -25,7 +25,7 @@ Configuration.ADMINS = [
 /*
  * Listes des commandes d'action pour Léa
  */
-Configuration.CLASSIC_MOTIONS = ["KUNG_FU_PANDA", "SHAOLIN_SOCCER"];
+Configuration.CLASSIC_MOTIONS = ["KUNG_FU_PANDA", "SHAOLIN_SOCCER", "MOVE_LEFT_ARM", "MOVE_RIGHT_ARM", "MOVE_HEAD"];
 //Configuration.CLASSIC_MOTIONS = ["AMELIE_POULAIN", "TWIN_PEAKS"];
 
 /*
@@ -56,7 +56,8 @@ Configuration.TEXT_LEA_DEMO_OFF = 'demo off';
 Configuration.processConst = {
   TYPE: {
     CLUSTER_TWITTER: 'CLUSTER_TWITTER',
-    CLUSTER_ARDUINO: 'CLUSTER_ARDUINO'
+    CLUSTER_ARDUINO: 'CLUSTER_ARDUINO',
+    CLUSTER_SNOWBOY: 'CLUSTER_SNOWBOY'
   },
   ACTION: {
     SHOW_TWEET: 'SHOW_TWEET',

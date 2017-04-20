@@ -25,6 +25,7 @@ function Arduino () {
  * @param data les données à écrire sur le port série
  */
 Arduino.messageHandler = function(msg) {
+  logger.log('info', msg);
   // Envoi du tweet par le port série avec serialPort
   if (arduinoPort == '' || arduinoPort == undefined) {
     // Détermination du port de communication de l'Arduino
@@ -56,8 +57,6 @@ function getCurrentPort(msg) {
             arduinoPort.on('error', function(err) {
               logger.log('error', 'Error: ', err.message);
             });
-          } else {
-            logger.log('error', 'Impossible de trouver un arduino connecté....')
           }
         });
     });
@@ -69,7 +68,9 @@ function getCurrentPort(msg) {
  * @param msg
  */
 function writeDataOnArduinoSerial(tweet) {
-  logger.log('debug', 'écriture du tweet : ' + tweet.LCDText);
+  if (tweet.fresh) {
+    logger.log('debug', 'écriture du tweetX : ' + tweet.LCDText);
+  }
   arduinoPort.write("{ 'motion': '" + tweet.motion + "', tweet:'" + tweet.LCDText + "', 'rank':'" + tweet.rank + "'}", function(err) {
     if (err) {
       return logger.log('error', 'Error on write: ', err.message);
